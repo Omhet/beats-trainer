@@ -1,0 +1,119 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.7);
+    z-index: 1000;
+}
+
+.overlay[data-state="open"] {
+    animation: fadeIn 200ms ease-out;
+}
+
+.overlay[data-state="closed"] {
+    animation: fadeOut 200ms ease-in;
+}
+
+.container {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #444444;
+    border: 4px solid #666666;
+    border-radius: 8px;
+    padding: 24px;
+    max-width: 90%;
+    max-height: 90%;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    width: var(--modal-width, auto);
+    height: var(--modal-height, auto);
+    z-index: 1001;
+}
+
+.container:focus {
+    outline: none;
+}
+
+.container[data-state="open"] {
+    animation: zoomIn 200ms ease-out;
+}
+
+.container[data-state="closed"] {
+    animation: zoomOut 200ms ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOut {
+    from {
+        opacity: 1;
+    }
+    to {
+        opacity: 0;
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@keyframes zoomOut {
+    from {
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: translate(-50%, -50%) scale(0.95);
+    }
+}
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #666666;
+    padding-bottom: 8px;
+}
+
+.title {
+    margin: 0;
+    font-size: 24px;
+    color: #ffd700;
+}
+
+.closeButton {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+}
+
+.closeButton:hover {
+    color: #ff4d4d;
+}
+
+.content {
+    overflow-y: auto;
+    flex: 1;
+}
