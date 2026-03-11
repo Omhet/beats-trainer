@@ -1,4 +1,3 @@
-import { CONFIG } from "@/phaser/config";
 import { MainScene } from "@/phaser/scenes/MainScene";
 import { AUTO, Game, Scale } from "phaser";
 
@@ -7,7 +6,7 @@ const config: Phaser.Types.Core.GameConfig = {
     width: window.innerWidth,
     height: window.innerHeight,
     parent: "phaser-app-container",
-    backgroundColor: CONFIG.backgroundColor,
+    backgroundColor: "#fff",
     scene: [MainScene],
     physics: {
         default: "arcade",
