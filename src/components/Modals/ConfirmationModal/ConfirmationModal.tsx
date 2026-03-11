@@ -1,5 +1,5 @@
+import ModalOverlay from "@/components/Modals/ModalOverlay/ModalOverlay";
 import React from "react";
-import ModalOverlay from "../ModalOverlay/ModalOverlay";
 import styles from "./ConfirmationModal.module.css";
 
 interface ConfirmationModalProps {

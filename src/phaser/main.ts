@@ -1,6 +1,6 @@
+import { CONFIG } from "@/phaser/config";
+import { MainScene } from "@/phaser/scenes/MainScene";
 import { AUTO, Game, Scale } from "phaser";
-import { CONFIG } from "./config";
-import { MainScene } from "./scenes/MainScene";
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,

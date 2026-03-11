@@ -1,6 +1,6 @@
+import type { EventPayloads, TypedEventBus } from "@/phaser/types/events";
+import { AppEvent } from "@/phaser/types/events";
 import { Events } from "phaser";
-import type { EventPayloads, TypedEventBus } from "./types/events";
-import { AppEvent } from "./types/events";
 
 /**
  * Type-safe EventBus for communication between React components and Phaser scenes.

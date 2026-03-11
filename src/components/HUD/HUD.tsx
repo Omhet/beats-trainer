@@ -1,5 +1,5 @@
+import { useAppState } from "@/hooks/useAppState";
 import React from "react";
-import { useAppState } from "../../hooks/useAppState";
 import styles from "./HUD.module.css";
 
 interface HUDProps {}

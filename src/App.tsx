@@ -1,7 +1,7 @@
+import { PhaserApp, RefPhaserApp } from "@/PhaserApp";
+import { HUD } from "@/components/HUD/HUD";
+import ModalRenderer from "@/components/Modals/ModalRenderer/ModalRenderer";
 import { useRef } from "react";
-import { PhaserApp, RefPhaserApp } from "./PhaserApp";
-import { HUD } from "./components/HUD/HUD";
-import ModalRenderer from "./components/Modals/ModalRenderer/ModalRenderer";
 
 function App() {
     // References to the PhaserApp component

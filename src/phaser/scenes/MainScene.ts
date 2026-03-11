@@ -1,7 +1,7 @@
+import { EventBus } from "@/phaser/EventBus";
+import { AssetManager } from "@/phaser/managers/AssetManager";
+import { AppEvent } from "@/phaser/types/events";
 import { Scene } from "phaser";
-import { EventBus } from "../EventBus";
-import { AssetManager } from "../managers/AssetManager";
-import { AppEvent } from "../types/events";
 
 export class MainScene extends Scene {
     // Managers

@@ -1,6 +1,6 @@
+import { EventBus } from "@/phaser/EventBus";
+import { AppEvent } from "@/phaser/types/events";
 import { useCallback, useEffect, useState } from "react";
-import { EventBus } from "../phaser/EventBus";
-import { AppEvent } from "../phaser/types/events";
 
 export type ModalType = "confirmation" | null;
 

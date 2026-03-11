@@ -1,6 +1,6 @@
+import ConfirmationModal from "@/components/Modals/ConfirmationModal/ConfirmationModal";
+import { useModal } from "@/hooks/useModal";
 import React from "react";
-import { useModal } from "../../../hooks/useModal";
-import ConfirmationModal from "../ConfirmationModal/ConfirmationModal";
 
 /**
  * ModalRenderer component
