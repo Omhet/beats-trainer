@@ -1,12 +1,12 @@
 [
-  {
-    "title": "Demo Song",
-    "artist": "Beat Trainer",
-    "genre": "Rock",
-    "bpm": 120,
-    "id": "demo_song",
-    "path": "demo_song",
-    "sections": [],
-    "hasDrumlessTrack": false
-  }
+    {
+        "title": "Demo Song",
+        "artist": "Beat Trainer",
+        "genre": "Rock",
+        "bpm": 120,
+        "id": "demo_song",
+        "path": "demo_song",
+        "sections": [],
+        "hasDrumlessTrack": false
+    }
 ]

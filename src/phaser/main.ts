@@ -7,6 +7,7 @@ const config: Phaser.Types.Core.GameConfig = {
     height: "100%",
     parent: "phaser-app-container",
     backgroundColor: "#0d0d0d",
+    pixelArt: true,
     scene: [TablatureScene],
     scale: {
         mode: Scale.RESIZE,
