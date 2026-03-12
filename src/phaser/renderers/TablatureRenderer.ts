@@ -1,4 +1,4 @@
-import { DRUM_MAP, DRUM_ROWS } from "@/constants/drumMapping";
+import { DRUM_DEFINITION, DRUM_ORDER } from "@/constants/drumMapping";
 import { NoteEvent } from "@/types/midi";
 import * as Phaser from "phaser";
 
@@ -13,12 +13,21 @@ const BAR_BEATS = 4; // beats per bar (4/4)
 
 const CYMBAL_PITCHES = new Set([42, 46, 44, 49, 57, 51, 53, 59]);
 
+interface ActiveRow {
+    label: string;
+    row: number;
+    color: string;
+    pitches: number[];
+}
+
 export class TablatureRenderer {
     private scene: Phaser.Scene;
     private staticTex!: Phaser.GameObjects.RenderTexture;
     private dynamicGfx!: Phaser.GameObjects.Graphics;
     private labelText: Phaser.GameObjects.Text[] = [];
     private notes: NoteEvent[] = [];
+    private activeRows: ActiveRow[] = [];
+    private pitchToRow: Record<number, number> = {};
     private bpm = 120;
     private cursor = 0; // advancing cursor for O(1) amortised note scan
 
@@ -37,12 +46,55 @@ export class TablatureRenderer {
         const { width, height } = this.scene.scale;
         this.staticTex = this.scene.add.renderTexture(0, 0, width, height);
         this.dynamicGfx = this.scene.add.graphics();
+        this.renderStaticLayer();
     }
 
     loadNotes(notes: NoteEvent[], bpm: number) {
         this.notes = notes;
         this.bpm = bpm;
+        this.calculateActiveRows();
         this.resetCursor();
+        this.renderStaticLayer();
+    }
+
+    private calculateActiveRows() {
+        const uniquePitches = Array.from(
+            new Set(this.notes.map((n) => n.pitch)),
+        );
+        const activeLabels = new Set<string>();
+        const labelToPitches: Record<string, number[]> = {};
+
+        for (const pitch of uniquePitches) {
+            const def = DRUM_DEFINITION[pitch];
+            if (def) {
+                activeLabels.add(def.label);
+                if (!labelToPitches[def.label]) {
+                    labelToPitches[def.label] = [];
+                }
+                labelToPitches[def.label].push(pitch);
+            }
+        }
+
+        // Filter and sort the rows based on the defined order
+        this.activeRows = DRUM_ORDER.filter((label) =>
+            activeLabels.has(label),
+        ).map((label, index) => {
+            const pitches = labelToPitches[label];
+            return {
+                label,
+                row: index,
+                color: DRUM_DEFINITION[pitches[0]].color,
+                pitches,
+            };
+        });
+
+        // Update the pitchToRow lookup table
+        this.pitchToRow = {};
+        for (const rowInfo of this.activeRows) {
+            for (const pitch of rowInfo.pitches) {
+                this.pitchToRow[pitch] = rowInfo.row;
+            }
+        }
     }
 
     resetCursor() {
@@ -59,8 +111,8 @@ export class TablatureRenderer {
 
         // Staff lines + separator
         gfx.lineStyle(1, 0x333333, 0.8);
-        for (const drumInfo of DRUM_ROWS) {
-            const y = TOP_PADDING + drumInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
+        for (const rowInfo of this.activeRows) {
+            const y = TOP_PADDING + rowInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
             gfx.lineBetween(LABEL_WIDTH, y, width, y);
         }
         gfx.lineStyle(1, 0x444444, 1);
@@ -73,13 +125,13 @@ export class TablatureRenderer {
         // Draw label texts
         this.labelText.forEach((t) => t.destroy());
         this.labelText = [];
-        for (const drumInfo of DRUM_ROWS) {
-            const y = TOP_PADDING + drumInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
+        for (const rowInfo of this.activeRows) {
+            const y = TOP_PADDING + rowInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
             const t = this.scene.add
-                .text(LABEL_WIDTH - 10, y, drumInfo.label, {
+                .text(LABEL_WIDTH - 10, y, rowInfo.label, {
                     fontSize: "12px",
                     fontFamily: "monospace",
-                    color: drumInfo.color,
+                    color: rowInfo.color,
                     align: "right",
                 })
                 .setOrigin(1, 0.5)
@@ -130,10 +182,11 @@ export class TablatureRenderer {
             if (x > width + NOTE_MAX_R) break; // past right edge, stop
             if (x < LABEL_WIDTH - NOTE_MAX_R) continue; // before label area, skip
 
-            const drumInfo = DRUM_MAP[note.pitch];
-            if (!drumInfo) continue;
+            const rowIndex = this.pitchToRow[note.pitch];
+            if (rowIndex === undefined) continue;
 
-            const y = TOP_PADDING + drumInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
+            const drumInfo = DRUM_DEFINITION[note.pitch];
+            const y = TOP_PADDING + rowIndex * ROW_HEIGHT + ROW_HEIGHT / 2;
             const r =
                 NOTE_MIN_R + (note.velocity / 127) * (NOTE_MAX_R - NOTE_MIN_R);
 
