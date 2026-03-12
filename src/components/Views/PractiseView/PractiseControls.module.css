@@ -1,0 +1,86 @@
+.controls {
+    height: 80px;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    border-top: 1px solid #222;
+    color: #eee;
+}
+
+.songInfo {
+    flex: 1;
+}
+
+.title {
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.section {
+    font-size: 12px;
+    color: #888;
+}
+
+.mainAction {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+}
+
+.playButton {
+    background: #0070f3;
+    color: white;
+    border: none;
+    padding: 8px 24px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+    min-width: 100px;
+}
+
+.playButton:hover {
+    background: #0060d3;
+}
+
+.settings {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    justify-content: flex-end;
+}
+
+.volumes {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.volumeRow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 10px;
+}
+
+.volumeRow input {
+    width: 60px;
+}
+
+.metronomeToggle {
+    background: #222;
+    color: #888;
+    border: 1px solid #333;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.metronomeToggle.active {
+    background: #0070f3;
+    color: white;
+    border-color: #0070f3;
+}

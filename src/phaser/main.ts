@@ -1,26 +1,16 @@
-import { MainScene } from "@/phaser/scenes/MainScene";
+import { TablatureScene } from "@/phaser/scenes/TablatureScene";
 import { AUTO, Game, Scale } from "phaser";
 
 const config: Phaser.Types.Core.GameConfig = {
     type: AUTO,
-    width: window.innerWidth,
-    height: window.innerHeight,
+    width: "100%",
+    height: "100%",
     parent: "phaser-app-container",
-    backgroundColor: "#fff",
-    scene: [MainScene],
-    physics: {
-        default: "arcade",
-        arcade: {
-            gravity: { x: 0, y: 0 },
-            debug: false,
-        },
-    },
+    backgroundColor: "#0d0d0d",
+    scene: [TablatureScene],
     scale: {
         mode: Scale.RESIZE,
-        autoCenter: Scale.CENTER_BOTH,
-    },
-    input: {
-        keyboard: true,
+        autoCenter: Scale.NO_CENTER,
     },
     audio: {
         noAudio: true,
@@ -28,14 +18,7 @@ const config: Phaser.Types.Core.GameConfig = {
 };
 
 const startPhaserApp = (parent: string) => {
-    const phaserApp = new Game({ ...config, parent });
-
-    // Handle window resize
-    window.addEventListener("resize", () => {
-        phaserApp.scale.resize(window.innerWidth, window.innerHeight);
-    });
-
-    return phaserApp;
+    return new Game({ ...config, parent });
 };
 
 export default startPhaserApp;

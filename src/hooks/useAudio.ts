@@ -52,9 +52,5 @@ export function useAudio() {
         AudioManager.pause();
     }, []);
 
-    const seek = useCallback((seconds: number) => {
-        AudioManager.seek(seconds);
-    }, []);
-
-    return { loadSong, play, pause, seek };
+    return { loadSong, play, pause };
 }

@@ -1,0 +1,110 @@
+import React from "react";
+import styles from "./PractiseControls.module.css";
+
+interface PractiseControlsProps {
+    isPlaying: boolean;
+    onTogglePlay: () => void;
+    metronomeEnabled: boolean;
+    onToggleMetronome: () => void;
+    volumes: {
+        metronome: number;
+        userDrums: number;
+        backingTrack: number;
+    };
+    onVolumeChange: (
+        key: "metronome" | "userDrums" | "backingTrack",
+        value: number,
+    ) => void;
+    showBackingTrack: boolean;
+    songTitle: string;
+    sectionName: string;
+}
+
+export const PractiseControls: React.FC<PractiseControlsProps> = ({
+    isPlaying,
+    onTogglePlay,
+    metronomeEnabled,
+    onToggleMetronome,
+    volumes,
+    onVolumeChange,
+    showBackingTrack,
+    songTitle,
+    sectionName,
+}) => {
+    return (
+        <div className={styles.controls}>
+            <div className={styles.songInfo}>
+                <div className={styles.title}>{songTitle}</div>
+                <div className={styles.section}>{sectionName}</div>
+            </div>
+
+            <div className={styles.mainAction}>
+                <button className={styles.playButton} onClick={onTogglePlay}>
+                    {isPlaying ? "PAUSE" : "PLAY"}
+                </button>
+            </div>
+
+            <div className={styles.settings}>
+                <div className={styles.volumes}>
+                    <div className={styles.volumeRow}>
+                        <label>Metronome</label>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volumes.metronome}
+                            onChange={(e) =>
+                                onVolumeChange(
+                                    "metronome",
+                                    parseFloat(e.target.value),
+                                )
+                            }
+                        />
+                    </div>
+                    <div className={styles.volumeRow}>
+                        <label>Drums</label>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volumes.userDrums}
+                            onChange={(e) =>
+                                onVolumeChange(
+                                    "userDrums",
+                                    parseFloat(e.target.value),
+                                )
+                            }
+                        />
+                    </div>
+                    {showBackingTrack && (
+                        <div className={styles.volumeRow}>
+                            <label>Track</label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="1"
+                                step="0.01"
+                                value={volumes.backingTrack}
+                                onChange={(e) =>
+                                    onVolumeChange(
+                                        "backingTrack",
+                                        parseFloat(e.target.value),
+                                    )
+                                }
+                            />
+                        </div>
+                    )}
+                </div>
+
+                <button
+                    className={`${styles.metronomeToggle} ${metronomeEnabled ? styles.active : ""}`}
+                    onClick={onToggleMetronome}
+                >
+                    Metronome
+                </button>
+            </div>
+        </div>
+    );
+};
