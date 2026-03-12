@@ -33,8 +33,11 @@ export class TablatureRenderer {
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
         const { width, height } = scene.scale;
-        this.staticTex = scene.add.renderTexture(0, 0, width, height);
-        this.dynamicGfx = scene.add.graphics();
+        this.staticTex = scene.add
+            .renderTexture(0, 0, width, height)
+            .setOrigin(0, 0)
+            .setDepth(0);
+        this.dynamicGfx = scene.add.graphics().setDepth(1);
     }
 
     resize() {
@@ -43,8 +46,11 @@ export class TablatureRenderer {
         this.labelText.forEach((t) => t.destroy());
         this.labelText = [];
         const { width, height } = this.scene.scale;
-        this.staticTex = this.scene.add.renderTexture(0, 0, width, height);
-        this.dynamicGfx = this.scene.add.graphics();
+        this.staticTex = this.scene.add
+            .renderTexture(0, 0, width, height)
+            .setOrigin(0, 0)
+            .setDepth(0);
+        this.dynamicGfx = this.scene.add.graphics().setDepth(1);
         this.renderStaticLayer();
     }
 
@@ -141,7 +147,7 @@ export class TablatureRenderer {
                     align: "right",
                 })
                 .setOrigin(1, 0.5)
-                .setDepth(1);
+                .setDepth(2);
             this.labelText.push(t);
         }
     }
