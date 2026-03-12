@@ -4,7 +4,6 @@ import * as Phaser from "phaser";
 
 const LABEL_WIDTH = 120; // left margin for row labels
 const ROW_HEIGHT = 80; // px per drum row
-const TOP_PADDING = 24; // px above first row
 const LOOKAHEAD_S = 4; // seconds visible ahead of playhead
 const LOOKBEHIND_S = 2; // seconds visible behind playhead
 const NOTE_MIN_R = 10;
@@ -101,6 +100,13 @@ export class TablatureRenderer {
         this.cursor = 0;
     }
 
+    private getRowY(rowIndex: number, totalRows: number): number {
+        const { height } = this.scene.scale;
+        const totalStaffHeight = totalRows * ROW_HEIGHT;
+        const startY = (height - totalStaffHeight) / 2;
+        return startY + rowIndex * ROW_HEIGHT + ROW_HEIGHT / 2;
+    }
+
     renderStaticLayer() {
         const { width, height } = this.scene.scale;
         const gfx = this.scene.add.graphics();
@@ -112,7 +118,7 @@ export class TablatureRenderer {
         // Staff lines + separator
         gfx.lineStyle(1, 0x333333, 0.8);
         for (const rowInfo of this.activeRows) {
-            const y = TOP_PADDING + rowInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
+            const y = this.getRowY(rowInfo.row, this.activeRows.length);
             gfx.lineBetween(LABEL_WIDTH, y, width, y);
         }
         gfx.lineStyle(1, 0x444444, 1);
@@ -126,7 +132,7 @@ export class TablatureRenderer {
         this.labelText.forEach((t) => t.destroy());
         this.labelText = [];
         for (const rowInfo of this.activeRows) {
-            const y = TOP_PADDING + rowInfo.row * ROW_HEIGHT + ROW_HEIGHT / 2;
+            const y = this.getRowY(rowInfo.row, this.activeRows.length);
             const t = this.scene.add
                 .text(LABEL_WIDTH - 10, y, rowInfo.label, {
                     fontSize: "12px",
@@ -186,7 +192,7 @@ export class TablatureRenderer {
             if (rowIndex === undefined) continue;
 
             const drumInfo = DRUM_DEFINITION[note.pitch];
-            const y = TOP_PADDING + rowIndex * ROW_HEIGHT + ROW_HEIGHT / 2;
+            const y = this.getRowY(rowIndex, this.activeRows.length);
             const r =
                 NOTE_MIN_R + (note.velocity / 127) * (NOTE_MAX_R - NOTE_MIN_R);
 
