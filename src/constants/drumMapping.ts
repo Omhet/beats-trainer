@@ -9,8 +9,8 @@ export const DRUM_MAP: Record<number, DrumInfo> = {
     36: { row: 8, label: "Kick", color: "#FF0000" },
     38: { row: 7, label: "Snare", color: "#FFFF00" }, // yellow
     40: { row: 7, label: "Snare", color: "#FFFF00" },
-    42: { row: 6, label: "Hi-Hat Closed", color: "#00FFFF" }, // cyan
-    46: { row: 5, label: "Hi-Hat Open", color: "#00CED1" }, // dark cyan
+    42: { row: 6, label: "Hat Closed", color: "#00FFFF" }, // cyan
+    46: { row: 5, label: "Hat Open", color: "#00CED1" }, // dark cyan
     47: { row: 2, label: "Tom High", color: "#00FF00" }, // green
     45: { row: 3, label: "Tom Mid", color: "#228B22" }, // forest green
     41: { row: 4, label: "Tom Low", color: "#556B2F" }, // dark olive green

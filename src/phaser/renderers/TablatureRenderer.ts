@@ -3,12 +3,12 @@ import { NoteEvent } from "@/types/midi";
 import * as Phaser from "phaser";
 
 const LABEL_WIDTH = 120; // left margin for row labels
-const ROW_HEIGHT = 44; // px per drum row
+const ROW_HEIGHT = 80; // px per drum row
 const TOP_PADDING = 24; // px above first row
-const LOOKAHEAD_S = 3.5; // seconds visible ahead of playhead
-const LOOKBEHIND_S = 0.8; // seconds visible behind playhead
-const NOTE_MIN_R = 4;
-const NOTE_MAX_R = 9;
+const LOOKAHEAD_S = 4; // seconds visible ahead of playhead
+const LOOKBEHIND_S = 2; // seconds visible behind playhead
+const NOTE_MIN_R = 10;
+const NOTE_MAX_R = 20;
 const BAR_BEATS = 4; // beats per bar (4/4)
 
 const CYMBAL_PITCHES = new Set([42, 46, 44, 49, 57, 51, 53, 59]);
