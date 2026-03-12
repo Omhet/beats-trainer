@@ -22,6 +22,9 @@ const config: Phaser.Types.Core.GameConfig = {
     input: {
         keyboard: true,
     },
+    audio: {
+        noAudio: true,
+    },
 };
 
 const startPhaserApp = (parent: string) => {
