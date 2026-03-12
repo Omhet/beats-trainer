@@ -38,7 +38,6 @@ export enum AppEvent {
     TAB_SEEK = "tab-seek",
     TAB_PLAYHEAD_UPDATE = "tab-playhead-update",
     TAB_READY = "tab-ready",
-    DRUM_HIT = "drum-hit",
     MIDI_INPUT_NOTE = "midi-input-note",
 }
 
@@ -65,7 +64,6 @@ export interface EventPayloads {
     [AppEvent.TAB_SEEK]: { seconds: number };
     [AppEvent.TAB_PLAYHEAD_UPDATE]: { seconds: number; percent: number };
     [AppEvent.TAB_READY]: void;
-    [AppEvent.DRUM_HIT]: { pitch: number; velocity: number; time: number };
     [AppEvent.MIDI_INPUT_NOTE]: {
         pitch: number;
         velocity: number;
