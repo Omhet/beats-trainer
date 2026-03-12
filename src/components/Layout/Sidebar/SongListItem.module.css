@@ -1,0 +1,119 @@
+.root {
+    border-bottom: 1px solid #222;
+}
+
+.itemHeader {
+    display: flex;
+}
+
+.trigger {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+    transition: background-color 0.2s;
+    width: 100%;
+}
+
+.trigger:hover {
+    background-color: #1a1a1a;
+}
+
+.trigger[data-state="open"] {
+    background-color: #1a1a1a;
+    border-left: 3px solid #e63946;
+}
+
+.songTitle {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 0.25rem;
+}
+
+.artistName {
+    font-size: 0.85rem;
+    color: #888;
+    margin-bottom: 0.5rem;
+}
+
+.genreTag {
+    font-size: 0.7rem;
+    background-color: #222;
+    color: #888;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    text-transform: uppercase;
+}
+
+.content {
+    overflow: hidden;
+    background-color: #0f0f0f;
+}
+
+.subList {
+    display: flex;
+    flex-direction: column;
+}
+
+.viewButton {
+    padding: 0.75rem 1.5rem 0.75rem 2.5rem;
+    background: transparent;
+    border: none;
+    color: #ccc;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.viewButton:hover {
+    color: #fff;
+    background-color: #1a1a1a;
+}
+
+.viewButtonActive {
+    color: #e63946;
+    font-weight: 600;
+}
+
+.viewButtonDisabled {
+    color: #444;
+    cursor: default;
+}
+
+.viewButtonDisabled:hover {
+    background-color: transparent;
+    color: #444;
+}
+
+.sectionList {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0.5rem;
+}
+
+.sectionButton {
+    padding: 0.5rem 1.5rem 0.5rem 3.5rem;
+    background: transparent;
+    border: none;
+    color: #888;
+    text-align: left;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.sectionButton:hover {
+    color: #fff;
+}
+
+.sectionButtonActive {
+    color: #e63946;
+    font-weight: 600;
+}

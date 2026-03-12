@@ -31,8 +31,10 @@
     "dependencies": {
         "@mdx-js/mdx": "^3.1.1",
         "@mdx-js/react": "^3.1.1",
+        "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-dialog": "^1.1.15",
         "@tonejs/midi": "^2.0.28",
+        "classnames": "^2.5.1",
         "phaser": "^3.90.0",
         "react": "^19.0.0",
         "react-dom": "^19.0.0",

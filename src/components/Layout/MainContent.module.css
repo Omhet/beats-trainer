@@ -1,0 +1,16 @@
+.mainContent {
+    flex: 1;
+    height: 100vh;
+    background-color: #0f0f0f;
+    overflow-y: auto;
+    position: relative;
+}
+
+.welcome {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    color: #888;
+    font-size: 1.1rem;
+}

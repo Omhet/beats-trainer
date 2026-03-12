@@ -2,7 +2,11 @@ import { PerformanceResult } from "@/types/performance";
 import { SongIndexEntry } from "@/types/song";
 import { create } from "zustand";
 
-export type SelectedView = "learn" | "practise" | "perform";
+export enum SelectedView {
+    Learn = "learn",
+    Practise = "practise",
+    Perform = "perform",
+}
 
 interface Volumes {
     midiPlayback: number; // 0-1
