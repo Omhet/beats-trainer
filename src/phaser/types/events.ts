@@ -1,3 +1,5 @@
+import { NoteEvent } from "@/types/midi";
+
 /**
  * Centralized app event definitions.
  * All EventBus communications should use these typed event constants.
@@ -28,6 +30,16 @@ export enum AppEvent {
 
     /** Phaser scene is initialized and ready for interaction */
     CURRENT_SCENE_READY = "current-scene-ready",
+
+    SCENE_SWITCH = "scene-switch",
+    LOAD_TABLATURE = "load-tablature",
+    TAB_PLAY = "tab-play",
+    TAB_PAUSE = "tab-pause",
+    TAB_SEEK = "tab-seek",
+    TAB_PLAYHEAD_UPDATE = "tab-playhead-update",
+    TAB_READY = "tab-ready",
+    DRUM_HIT = "drum-hit",
+    MIDI_INPUT_NOTE = "midi-input-note",
 }
 
 /**
@@ -42,6 +54,23 @@ export interface EventPayloads {
     };
     [AppEvent.CLOSE_MODAL]: void;
 
+    [AppEvent.SCENE_SWITCH]: { sceneName: string };
+    [AppEvent.LOAD_TABLATURE]: {
+        notes: NoteEvent[];
+        bpm: number;
+        totalDuration: number;
+    };
+    [AppEvent.TAB_PLAY]: void;
+    [AppEvent.TAB_PAUSE]: void;
+    [AppEvent.TAB_SEEK]: { seconds: number };
+    [AppEvent.TAB_PLAYHEAD_UPDATE]: { seconds: number; percent: number };
+    [AppEvent.TAB_READY]: void;
+    [AppEvent.DRUM_HIT]: { pitch: number; velocity: number; time: number };
+    [AppEvent.MIDI_INPUT_NOTE]: {
+        pitch: number;
+        velocity: number;
+        time: number;
+    };
     // Scene lifecycle payloads
     [AppEvent.CURRENT_SCENE_READY]: Phaser.Scene;
 }
