@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import styles from "./PractiseControls.module.css";
 
 interface PractiseControlsProps {
@@ -35,6 +35,23 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
     bpm,
     onBpmChange,
 }) => {
+    const [bpmInput, setBpmInput] = useState(String(bpm));
+
+    // Keep local input in sync when the store BPM changes externally (e.g. song change)
+    useEffect(() => {
+        setBpmInput(String(bpm));
+    }, [bpm]);
+
+    const commitBpm = () => {
+        const val = parseInt(bpmInput, 10);
+        if (!isNaN(val) && val >= 40 && val <= 300) {
+            onBpmChange(val);
+        } else {
+            // Revert to last known valid value
+            setBpmInput(String(bpm));
+        }
+    };
+
     return (
         <div className={styles.controls}>
             <div className={styles.songInfo}>
@@ -47,13 +64,10 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
                         min={40}
                         max={300}
                         step={1}
-                        value={bpm}
-                        onChange={(e) => {
-                            const val = parseInt(e.target.value, 10);
-                            if (!isNaN(val) && val >= 40 && val <= 300) {
-                                onBpmChange(val);
-                            }
-                        }}
+                        value={bpmInput}
+                        onChange={(e) => setBpmInput(e.target.value)}
+                        onBlur={commitBpm}
+                        onKeyDown={(e) => e.key === "Enter" && commitBpm()}
                         className={styles.bpmInput}
                     />
                 </div>
