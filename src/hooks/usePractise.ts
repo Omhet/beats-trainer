@@ -113,11 +113,10 @@ export function usePractise() {
     // Effect 3: when track ends, behave as if user pressed Reset then Play
     useEffect(() => {
         const handleTrackEnd = async () => {
-            // Uncommnt when needed — currently just keeps playing indefinitely, which is fine for testing
-            // resetPlayback();
-            // await play();
-            // EventBus.emit(AppEvent.TAB_PLAY);
-            // setIsPlaying(true);
+            resetPlayback();
+            await play();
+            EventBus.emit(AppEvent.TAB_PLAY);
+            setIsPlaying(true);
         };
         EventBus.on(AppEvent.TRACK_END, handleTrackEnd);
         return () => {
