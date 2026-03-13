@@ -42,16 +42,6 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
         setBpmInput(String(bpm));
     }, [bpm]);
 
-    const commitBpm = () => {
-        const val = parseInt(bpmInput, 10);
-        if (!isNaN(val) && val >= 40 && val <= 300) {
-            onBpmChange(val);
-        } else {
-            // Revert to last known valid value
-            setBpmInput(String(bpm));
-        }
-    };
-
     return (
         <div className={styles.controls}>
             <div className={styles.songInfo}>
@@ -65,9 +55,13 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
                         max={300}
                         step={1}
                         value={bpmInput}
-                        onChange={(e) => setBpmInput(e.target.value)}
-                        onBlur={commitBpm}
-                        onKeyDown={(e) => e.key === "Enter" && commitBpm()}
+                        onChange={(e) => {
+                            setBpmInput(e.target.value);
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val) && val >= 40 && val <= 300) {
+                                onBpmChange(val);
+                            }
+                        }}
                         className={styles.bpmInput}
                     />
                 </div>
