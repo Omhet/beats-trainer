@@ -3,9 +3,10 @@ import { useEffect } from "react";
 
 interface Options {
     onPlayPause: () => void;
+    onReset: () => void;
 }
 
-export function useKeyboardShortcuts({ onPlayPause }: Options) {
+export function useKeyboardShortcuts({ onPlayPause, onReset }: Options) {
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             // Ignore shortcuts when typing in an input
@@ -20,9 +21,13 @@ export function useKeyboardShortcuts({ onPlayPause }: Options) {
                     e.preventDefault();
                     onPlayPause();
                     break;
+                case KEYBOARD_SHORTCUTS.RESET:
+                    e.preventDefault();
+                    onReset();
+                    break;
             }
         };
         document.addEventListener("keydown", handler);
         return () => document.removeEventListener("keydown", handler);
-    }, [onPlayPause]);
+    }, [onPlayPause, onReset]);
 }

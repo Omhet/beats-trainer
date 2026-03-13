@@ -27,6 +27,21 @@
     flex: 1;
     display: flex;
     justify-content: center;
+    gap: 8px;
+}
+
+.resetButton {
+    background: #444;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.resetButton:hover {
+    background: #555;
 }
 
 .playButton {

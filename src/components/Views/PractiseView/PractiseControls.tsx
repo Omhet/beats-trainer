@@ -4,6 +4,7 @@ import styles from "./PractiseControls.module.css";
 interface PractiseControlsProps {
     isPlaying: boolean;
     onTogglePlay: () => void;
+    onReset: () => void;
     volumes: {
         metronome: number;
         userDrums: number;
@@ -23,6 +24,7 @@ interface PractiseControlsProps {
 export const PractiseControls: React.FC<PractiseControlsProps> = ({
     isPlaying,
     onTogglePlay,
+    onReset,
     volumes,
     onVolumeChange,
     showBackingTrack,
@@ -64,6 +66,9 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
             </div>
 
             <div className={styles.mainAction}>
+                <button className={styles.resetButton} onClick={onReset}>
+                    RESET
+                </button>
                 <button className={styles.playButton} onClick={onTogglePlay}>
                     {isPlaying ? "PAUSE" : "PLAY"}
                 </button>

@@ -14,7 +14,7 @@ export function usePractise() {
     const songs = useAppStore((s) => s.songs);
     const practiseBpm = useAppStore((s) => s.practiseBpm);
     const setPractiseBpm = useAppStore((s) => s.setPractiseBpm);
-    const { loadSong, play, pause } = useAudio();
+    const { loadSong, play, pause, reset: audioReset } = useAudio();
     const [isPlaying, setIsPlaying] = useState(false);
     const [parsedNotes, setParsedNotes] = useState<NoteEvent[] | null>(null);
     const isPlayingRef = useRef(false);
@@ -72,6 +72,7 @@ export function usePractise() {
                   0.5
                 : 0;
 
+
         // Stop playback and reset
         if (isPlayingRef.current) {
             pause();
@@ -87,6 +88,7 @@ export function usePractise() {
             backingTrackUrl: song.hasDrumlessTrack
                 ? `/assets/songs/${songId}/drumless.mp3`
                 : undefined,
+            totalDuration,
         }).catch((err) =>
             console.error("usePractise: failed to reload song at new BPM", err),
         );
@@ -110,5 +112,11 @@ export function usePractise() {
         }
     }, [play, pause]);
 
-    return { isPlaying, togglePlay };
+    const resetPlayback = useCallback(() => {
+        audioReset();
+        EventBus.emit(AppEvent.TAB_PAUSE);
+        setIsPlaying(false);
+    }, [audioReset]);
+
+    return { isPlaying, togglePlay, resetPlayback };
 }

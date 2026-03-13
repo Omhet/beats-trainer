@@ -29,9 +29,19 @@ class AudioManagerClass {
         bpm: number,
         samplesBasePath: string,
         backingTrackUrl?: string,
+        totalDuration?: number,
     ): Promise<void> {
         Tone.getTransport().stop();
         Tone.getTransport().seconds = 0;
+
+        // Configure looping
+        if (totalDuration && totalDuration > 0) {
+            Tone.getTransport().loop = true;
+            Tone.getTransport().loopStart = 0;
+            Tone.getTransport().loopEnd = totalDuration;
+        } else {
+            Tone.getTransport().loop = false;
+        }
 
         // Load sampler (fire and forget, graceful if samples missing)
         this.sampler.load(samplesBasePath).catch(() => {
@@ -65,6 +75,10 @@ class AudioManagerClass {
 
     pause(): void {
         Tone.getTransport().pause();
+    }
+
+    reset(): void {
+        Tone.getTransport().stop();
     }
 
     seek(seconds: number): void {

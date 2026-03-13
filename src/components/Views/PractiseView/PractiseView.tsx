@@ -7,7 +7,7 @@ import { PractiseControls } from "./PractiseControls";
 import styles from "./PractiseView.module.css";
 
 export function PractiseView() {
-    const { isPlaying, togglePlay } = usePractise();
+    const { isPlaying, togglePlay, resetPlayback } = usePractise();
     const { songId, section } = useNavState();
     const songs = useAppStore((s) => s.songs);
     const volumes = useAppStore((s) => s.volumes);
@@ -17,7 +17,7 @@ export function PractiseView() {
 
     const song = songs.find((s) => s.id === songId);
 
-    useKeyboardShortcuts({ onPlayPause: togglePlay });
+    useKeyboardShortcuts({ onPlayPause: togglePlay, onReset: resetPlayback });
 
     return (
         <div className={styles.container}>
@@ -27,6 +27,7 @@ export function PractiseView() {
             <PractiseControls
                 isPlaying={isPlaying}
                 onTogglePlay={togglePlay}
+                onReset={resetPlayback}
                 volumes={{
                     metronome: volumes.metronome,
                     userDrums: volumes.userDrums,
