@@ -24,9 +24,11 @@ interface AppState {
     selectedSongId: string | null;
     selectedView: SelectedView | null;
     selectedSection: string | null; // section name or null for full song
+    practiseBpm: number;
     setSelectedSong: (id: string | null) => void;
     setSelectedView: (view: SelectedView | null) => void;
     setSelectedSection: (section: string | null) => void;
+    setPractiseBpm: (bpm: number) => void;
 
     // Audio volumes
     volumes: Volumes;
@@ -50,9 +52,11 @@ export const useAppStore = create<AppState>((set) => ({
     selectedSongId: null,
     selectedView: null,
     selectedSection: null,
+    practiseBpm: 120,
     setSelectedSong: (id) => set({ selectedSongId: id, selectedSection: null }),
     setSelectedView: (view) => set({ selectedView: view }),
     setSelectedSection: (section) => set({ selectedSection: section }),
+    setPractiseBpm: (bpm) => set({ practiseBpm: bpm }),
 
     volumes: {
         midiPlayback: 0.8,

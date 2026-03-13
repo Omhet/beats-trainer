@@ -1,22 +1,32 @@
 [
-    {
-        "title": "Demo Song",
-        "artist": "Beat Trainer",
-        "genre": "Rock",
-        "bpm": 120,
-        "id": "demo_song",
-        "path": "demo_song",
-        "sections": [],
-        "hasDrumlessTrack": false
-    },
-    {
-        "title": "My Demo Song",
-        "artist": "Me",
-        "genre": "Rock",
-        "bpm": 90,
-        "id": "my_demo_song",
-        "path": "my_demo_song",
-        "sections": [],
-        "hasDrumlessTrack": false
-    }
+  {
+    "title": "Song 2",
+    "artist": "Blur",
+    "genre": "Rock",
+    "bpm": 129,
+    "id": "blur-song_2",
+    "path": "blur-song_2",
+    "sections": [],
+    "hasDrumlessTrack": false
+  },
+  {
+    "title": "Demo Song",
+    "artist": "Beat Trainer",
+    "genre": "Rock",
+    "bpm": 120,
+    "id": "demo_song",
+    "path": "demo_song",
+    "sections": [],
+    "hasDrumlessTrack": false
+  },
+  {
+    "title": "My Demo Song",
+    "artist": "Me",
+    "genre": "Rock",
+    "bpm": 90,
+    "id": "my_demo_song",
+    "path": "my_demo_song",
+    "sections": [],
+    "hasDrumlessTrack": false
+  }
 ]

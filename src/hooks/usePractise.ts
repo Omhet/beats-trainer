@@ -1,7 +1,9 @@
+import { AudioManager } from "@/audio/AudioManager";
 import { useAudio } from "@/hooks/useAudio";
 import { EventBus } from "@/phaser/EventBus";
 import { AppEvent } from "@/phaser/types/events";
 import { useAppStore } from "@/store/useAppStore";
+import { NoteEvent } from "@/types/midi";
 import { parseMidi } from "@/utils/midiParser";
 import { loadSongMidi } from "@/utils/songLoader";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -10,61 +12,91 @@ export function usePractise() {
     const selectedSongId = useAppStore((s) => s.selectedSongId);
     const selectedSection = useAppStore((s) => s.selectedSection);
     const songs = useAppStore((s) => s.songs);
+    const practiseBpm = useAppStore((s) => s.practiseBpm);
+    const setPractiseBpm = useAppStore((s) => s.setPractiseBpm);
     const { loadSong, play, pause } = useAudio();
     const [isPlaying, setIsPlaying] = useState(false);
+    const [parsedNotes, setParsedNotes] = useState<NoteEvent[] | null>(null);
     const isPlayingRef = useRef(false);
 
-    // Keep ref in sync for use in callbacks
+    // Keep ref in sync
     useEffect(() => {
         isPlayingRef.current = isPlaying;
     }, [isPlaying]);
 
-    // Load song whenever selection changes
+    // Effect 1: song changes → fetch + parse + reset BPM to song default
     useEffect(() => {
         if (!selectedSongId) return;
-
         const song = songs.find((s) => s.id === selectedSongId);
         if (!song) return;
 
         let cancelled = false;
 
-        const load = async () => {
+        const fetchAndParse = async () => {
             try {
                 const buffer = await loadSongMidi(
                     selectedSongId,
                     selectedSection ?? undefined,
                 );
                 if (cancelled) return;
-
                 const notes = parseMidi(buffer);
-                const totalDuration =
-                    notes.length > 0 ? notes[notes.length - 1].time + 0.5 : 0;
-
-                await loadSong({
-                    notes,
-                    bpm: song.bpm,
-                    backingTrackUrl: song.hasDrumlessTrack
-                        ? `/assets/songs/${selectedSongId}/drumless.mp3`
-                        : undefined,
-                });
-                if (cancelled) return;
-
-                EventBus.emit(AppEvent.LOAD_TABLATURE, {
-                    notes,
-                    bpm: song.bpm,
-                    totalDuration,
-                });
-                setIsPlaying(false);
+                setParsedNotes(notes);
+                setPractiseBpm(song.bpm);
+                // Stop playback when song changes
+                if (isPlayingRef.current) {
+                    pause();
+                    EventBus.emit(AppEvent.TAB_PAUSE);
+                    setIsPlaying(false);
+                }
             } catch (err) {
                 console.error("usePractise: failed to load song", err);
             }
         };
 
-        load();
+        fetchAndParse();
         return () => {
             cancelled = true;
         };
-    }, [selectedSongId, selectedSection, songs, loadSong]);
+    }, [selectedSongId, selectedSection, songs, setPractiseBpm, pause]);
+
+    // Effect 2: notes or BPM change → reload audio + Phaser (stop + reset)
+    useEffect(() => {
+        if (!parsedNotes || !selectedSongId) return;
+        const song = songs.find((s) => s.id === selectedSongId);
+        if (!song) return;
+
+        const secondsPerBeat = 60 / practiseBpm;
+        const totalDuration =
+            parsedNotes.length > 0
+                ? parsedNotes[parsedNotes.length - 1].beat * secondsPerBeat +
+                  0.5
+                : 0;
+
+        // Stop playback and reset
+        if (isPlayingRef.current) {
+            pause();
+            EventBus.emit(AppEvent.TAB_PAUSE);
+            setIsPlaying(false);
+        }
+        // Seek to start
+        AudioManager.seek(0);
+
+        loadSong({
+            notes: parsedNotes,
+            bpm: practiseBpm,
+            backingTrackUrl: song.hasDrumlessTrack
+                ? `/assets/songs/${selectedSongId}/drumless.mp3`
+                : undefined,
+        }).catch((err) =>
+            console.error("usePractise: failed to reload song at new BPM", err),
+        );
+
+        EventBus.emit(AppEvent.LOAD_TABLATURE, {
+            notes: parsedNotes,
+            bpm: practiseBpm,
+            totalDuration,
+        });
+    }, [parsedNotes, practiseBpm, selectedSongId, songs, loadSong, pause]);
 
     const togglePlay = useCallback(async () => {
         if (isPlayingRef.current) {

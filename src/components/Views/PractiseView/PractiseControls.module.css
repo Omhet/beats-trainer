@@ -84,3 +84,28 @@
     color: white;
     border-color: #0070f3;
 }
+
+.bpmRow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    margin-top: 2px;
+    color: #888;
+}
+
+.bpmInput {
+    width: 56px;
+    background: #1a1a1a;
+    border: 1px solid #333;
+    border-radius: 3px;
+    color: #eee;
+    font-size: 12px;
+    padding: 2px 4px;
+    text-align: center;
+}
+
+.bpmInput:focus {
+    outline: none;
+    border-color: #0070f3;
+}

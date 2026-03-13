@@ -18,6 +18,8 @@ interface PractiseControlsProps {
     showBackingTrack: boolean;
     songTitle: string;
     sectionName: string;
+    bpm: number;
+    onBpmChange: (bpm: number) => void;
 }
 
 export const PractiseControls: React.FC<PractiseControlsProps> = ({
@@ -30,12 +32,31 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
     showBackingTrack,
     songTitle,
     sectionName,
+    bpm,
+    onBpmChange,
 }) => {
     return (
         <div className={styles.controls}>
             <div className={styles.songInfo}>
                 <div className={styles.title}>{songTitle}</div>
                 <div className={styles.section}>{sectionName}</div>
+                <div className={styles.bpmRow}>
+                    <label>BPM</label>
+                    <input
+                        type="number"
+                        min={40}
+                        max={300}
+                        step={1}
+                        value={bpm}
+                        onChange={(e) => {
+                            const val = parseInt(e.target.value, 10);
+                            if (!isNaN(val) && val >= 40 && val <= 300) {
+                                onBpmChange(val);
+                            }
+                        }}
+                        className={styles.bpmInput}
+                    />
+                </div>
             </div>
 
             <div className={styles.mainAction}>

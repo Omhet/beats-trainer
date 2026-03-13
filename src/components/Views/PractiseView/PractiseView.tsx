@@ -14,6 +14,8 @@ export function PractiseView() {
     const metronomeEnabled = useAppStore((s) => s.metronomeEnabled);
     const toggleMetronome = useAppStore((s) => s.toggleMetronome);
     const setVolume = useAppStore((s) => s.setVolume);
+    const practiseBpm = useAppStore((s) => s.practiseBpm);
+    const setPractiseBpm = useAppStore((s) => s.setPractiseBpm);
 
     const song = songs.find((s) => s.id === selectedSongId);
 
@@ -38,6 +40,8 @@ export function PractiseView() {
                 showBackingTrack={song?.hasDrumlessTrack ?? false}
                 songTitle={song?.title ?? ""}
                 sectionName={selectedSection ?? "Full Song"}
+                bpm={practiseBpm}
+                onBpmChange={setPractiseBpm}
             />
         </div>
     );

@@ -18,7 +18,7 @@ export class MidiPlayer {
                 // Forward the precise WebAudio clock time for sample-accurate scheduling
                 this.onNote?.(note, time);
             },
-            notes.map((n) => [n.time, n]),
+            notes.map((n) => [n.beat * (60 / bpm), n]),
         );
         this.part.start(0);
     }

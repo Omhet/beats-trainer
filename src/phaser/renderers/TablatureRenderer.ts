@@ -180,9 +180,10 @@ export class TablatureRenderer {
 
         // 3. Advance cursor: skip notes that are no longer visible
         const minVisible = currentTime - LOOKBEHIND_S - 0.1;
+        const secondsPerBeatVal = 60 / this.bpm;
         while (
             this.cursor < this.notes.length - 1 &&
-            this.notes[this.cursor].time < minVisible
+            this.notes[this.cursor].beat * secondsPerBeatVal < minVisible
         ) {
             this.cursor++;
         }
@@ -190,7 +191,8 @@ export class TablatureRenderer {
         // 4. Draw notes
         for (let i = this.cursor; i < this.notes.length; i++) {
             const note = this.notes[i];
-            const x = playheadX + (note.time - currentTime) * pps;
+            const noteTime = note.beat * secondsPerBeatVal;
+            const x = playheadX + (noteTime - currentTime) * pps;
             if (x > width + NOTE_MAX_R) break; // past right edge, stop
             if (x < LABEL_WIDTH - NOTE_MAX_R) continue; // before label area, skip
 
@@ -202,7 +204,7 @@ export class TablatureRenderer {
             const r =
                 NOTE_MIN_R + (note.velocity / 127) * (NOTE_MAX_R - NOTE_MIN_R);
 
-            const isActive = Math.abs(note.time - currentTime) < 0.06;
+            const isActive = Math.abs(noteTime - currentTime) < 0.06;
             const colorHex = parseInt(drumInfo.color.replace("#", ""), 16);
             const alpha = isActive ? 1.0 : 0.85;
 
