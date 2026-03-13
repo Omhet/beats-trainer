@@ -44,12 +44,16 @@ export class TablatureRenderer {
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
-        const { width, height } = scene.scale;
-        this.staticTex = scene.add
+        this.initGfx();
+    }
+
+    private initGfx() {
+        const { width, height } = this.scene.scale;
+        this.staticTex = this.scene.add
             .renderTexture(0, 0, width, height)
             .setOrigin(0, 0)
             .setDepth(0);
-        this.dynamicGfx = scene.add.graphics().setDepth(1);
+        this.dynamicGfx = this.scene.add.graphics().setDepth(1);
     }
 
     resize() {
@@ -57,12 +61,7 @@ export class TablatureRenderer {
         this.dynamicGfx.destroy();
         this.labelText.forEach((t) => t.destroy());
         this.labelText = [];
-        const { width, height } = this.scene.scale;
-        this.staticTex = this.scene.add
-            .renderTexture(0, 0, width, height)
-            .setOrigin(0, 0)
-            .setDepth(0);
-        this.dynamicGfx = this.scene.add.graphics().setDepth(1);
+        this.initGfx();
         this.renderStaticLayer();
     }
 
@@ -165,71 +164,104 @@ export class TablatureRenderer {
         }
     }
 
+    private getPlayheadX(currentBeat: number, ppb: number): number {
+        return LABEL_WIDTH + LOOKBEHIND_BEATS * ppb;
+    }
+
+    private getPPB(width: number): number {
+        const contentWidth = width - LABEL_WIDTH;
+        return contentWidth / (LOOKBEHIND_BEATS + LOOKAHEAD_BEATS);
+    }
+
+    private getNoteX(
+        beat: number,
+        currentBeat: number,
+        ppb: number,
+        playheadX: number,
+    ): number {
+        return playheadX + (beat - currentBeat) * ppb;
+    }
+
+    private drawGridLine(
+        beat: number,
+        currentBeat: number,
+        ppb: number,
+        playheadX: number,
+        color: number,
+        alpha: number,
+        lineWidth: number,
+        height: number,
+    ) {
+        const x = this.getNoteX(beat, currentBeat, ppb, playheadX);
+        if (x >= LABEL_WIDTH && x <= this.scene.scale.width) {
+            this.dynamicGfx.lineStyle(lineWidth, color, alpha);
+            this.dynamicGfx.lineBetween(x, 0, x, height);
+        }
+    }
+
     render(currentTime: number) {
         const { width, height } = this.scene.scale;
-        const contentWidth = width - LABEL_WIDTH;
-        const ppb = contentWidth / (LOOKBEHIND_BEATS + LOOKAHEAD_BEATS); // pixels per beat
+        const ppb = this.getPPB(width); // pixels per beat
         const secondsPerBeat = 60 / this.bpm;
         const currentBeat = currentTime / secondsPerBeat;
-        const playheadX = LABEL_WIDTH + LOOKBEHIND_BEATS * ppb;
+        const playheadX = this.getPlayheadX(currentBeat, ppb);
 
         // 1. Draw static background handled by staticTex at depth 0
         this.dynamicGfx.clear();
 
         // 2. Draw bar, beat, and half-beat lines
-        const secondsPerBar = secondsPerBeat * BAR_BEATS;
         const startBeat = currentBeat - LOOKBEHIND_BEATS;
         const endBeat = currentBeat + LOOKAHEAD_BEATS;
 
         // Half-beat lines
         const firstHalfBeat = Math.ceil(startBeat * 2);
         const lastHalfBeat = Math.floor(endBeat * 2);
-        this.dynamicGfx.lineStyle(
-            GRID_HALFBEAT_WIDTH,
-            GRID_HALFBEAT_COLOR,
-            GRID_HALFBEAT_ALPHA,
-        );
         for (let h = firstHalfBeat; h <= lastHalfBeat; h++) {
             const b = h / 2;
-            // Skip positions that will be drawn as beat or bar lines
             if (h % 2 === 0) continue;
-            const x = playheadX + (b - currentBeat) * ppb;
-            if (x >= LABEL_WIDTH && x <= width) {
-                this.dynamicGfx.lineBetween(x, 0, x, height);
-            }
+            this.drawGridLine(
+                b,
+                currentBeat,
+                ppb,
+                playheadX,
+                GRID_HALFBEAT_COLOR,
+                GRID_HALFBEAT_ALPHA,
+                GRID_HALFBEAT_WIDTH,
+                height,
+            );
         }
 
         // Beat lines
         const firstBeat = Math.ceil(startBeat);
         const lastBeat = Math.floor(endBeat);
-        this.dynamicGfx.lineStyle(
-            GRID_BEAT_WIDTH,
-            GRID_BEAT_COLOR,
-            GRID_BEAT_ALPHA,
-        );
         for (let b = firstBeat; b <= lastBeat; b++) {
-            // Skip positions that will be drawn as bar lines
             if (b % BAR_BEATS === 0) continue;
-            const x = playheadX + (b - currentBeat) * ppb;
-            if (x >= LABEL_WIDTH && x <= width) {
-                this.dynamicGfx.lineBetween(x, 0, x, height);
-            }
+            this.drawGridLine(
+                b,
+                currentBeat,
+                ppb,
+                playheadX,
+                GRID_BEAT_COLOR,
+                GRID_BEAT_ALPHA,
+                GRID_BEAT_WIDTH,
+                height,
+            );
         }
 
         // Bar lines
         const firstBar = Math.ceil(startBeat / BAR_BEATS);
         const lastBar = Math.floor(endBeat / BAR_BEATS);
-        this.dynamicGfx.lineStyle(
-            GRID_BAR_WIDTH,
-            GRID_BAR_COLOR,
-            GRID_BAR_ALPHA,
-        );
         for (let b = firstBar; b <= lastBar; b++) {
-            const barBeat = b * BAR_BEATS;
-            const x = playheadX + (barBeat - currentBeat) * ppb;
-            if (x >= LABEL_WIDTH && x <= width) {
-                this.dynamicGfx.lineBetween(x, 0, x, height);
-            }
+            this.drawGridLine(
+                b * BAR_BEATS,
+                currentBeat,
+                ppb,
+                playheadX,
+                GRID_BAR_COLOR,
+                GRID_BAR_ALPHA,
+                GRID_BAR_WIDTH,
+                height,
+            );
         }
 
         // 3. Advance cursor: skip notes that are no longer visible
@@ -250,7 +282,7 @@ export class TablatureRenderer {
         // 4. Draw notes
         for (let i = this.cursor; i < this.notes.length; i++) {
             const note = this.notes[i];
-            const x = playheadX + (note.beat - currentBeat) * ppb;
+            const x = this.getNoteX(note.beat, currentBeat, ppb, playheadX);
             if (x > width + NOTE_MAX_R) break; // past right edge, stop
             if (x < LABEL_WIDTH - NOTE_MAX_R) continue; // before label area, skip
 
