@@ -1,22 +1,15 @@
 import * as Tone from "tone";
 
 const PITCH_TO_SAMPLE: Record<number, string> = {
-    35: "kick.wav",
     36: "kick.wav",
     38: "snare.wav",
-    40: "snare.wav",
     42: "hihat_closed.wav",
     46: "hihat_open.wav",
     47: "tom_high.wav",
-    48: "tom_high.wav",
     45: "tom_mid.wav",
-    41: "tom_floor_low.wav",
-    43: "tom_floor_low.wav",
+    44: "tom_floor_low.wav",
     49: "crash_1.wav",
-    57: "crash_2.wav",
     51: "ride.wav",
-    53: "ride.wav",
-    59: "ride.wav",
 };
 
 export class DrumSampler {
