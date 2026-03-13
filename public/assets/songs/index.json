@@ -13,7 +13,7 @@
         "title": "My Demo Song",
         "artist": "Me",
         "genre": "Rock",
-        "bpm": 120,
+        "bpm": 90,
         "id": "my_demo_song",
         "path": "my_demo_song",
         "sections": [],
