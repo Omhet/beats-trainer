@@ -4,7 +4,7 @@ import * as Phaser from "phaser";
 
 const LABEL_WIDTH = 120; // left margin for row labels
 const ROW_HEIGHT = 80; // px per drum row
-const LOOKAHEAD_S = 4; // seconds visible ahead of playhead
+const LOOKAHEAD_S = 8; // seconds visible ahead of playhead
 const LOOKBEHIND_S = 2; // seconds visible behind playhead
 const NOTE_MIN_R = 10;
 const NOTE_MAX_R = 20;
