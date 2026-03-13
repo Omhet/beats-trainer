@@ -2,6 +2,13 @@ import { PerformanceResult } from "@/types/performance";
 import { SongIndexEntry } from "@/types/song";
 import { create } from "zustand";
 
+export type MidiPermission = "unknown" | "granted" | "denied";
+
+export interface ConnectedMidiDevice {
+    id: string;
+    name: string;
+}
+
 interface Volumes {
     midiPlayback: number; // 0-1
     metronome: number; // 0-1
@@ -26,6 +33,12 @@ interface AppState {
     // Performance history
     performanceHistory: PerformanceResult[];
     addPerformanceResult: (result: PerformanceResult) => void;
+
+    // MIDI device state (non-persisted, runtime only)
+    midiPermission: MidiPermission;
+    setMidiPermission: (permission: MidiPermission) => void;
+    connectedMidiDevices: ConnectedMidiDevice[];
+    setConnectedMidiDevices: (devices: ConnectedMidiDevice[]) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -52,4 +65,10 @@ export const useAppStore = create<AppState>((set) => ({
         set((state) => ({
             performanceHistory: [...state.performanceHistory, result],
         })),
+
+    midiPermission: "unknown",
+    setMidiPermission: (permission) => set({ midiPermission: permission }),
+    connectedMidiDevices: [],
+    setConnectedMidiDevices: (devices) =>
+        set({ connectedMidiDevices: devices }),
 }));
