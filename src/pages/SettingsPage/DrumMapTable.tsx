@@ -27,7 +27,7 @@ function getDisplayLabel(pitch: number): string {
 }
 
 export function DrumMapTable({ deviceId, deviceName }: Props) {
-    const deviceOverrides = useMidiStore((s) => s.deviceMaps[deviceId] ?? {});
+    const deviceOverrides = useMidiStore((s) => s.deviceMaps[deviceId]);
     const getEffectiveMap = useMidiStore((s) => s.getEffectiveMap);
     const learnTarget = useMidiStore((s) => s.learnTarget);
     const startLearn = useMidiStore((s) => s.startLearn);
@@ -96,4 +96,3 @@ export function DrumMapTable({ deviceId, deviceName }: Props) {
         </table>
     );
 }
-
