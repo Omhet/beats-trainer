@@ -24,10 +24,6 @@ interface AppState {
     metronomeEnabled: boolean;
     toggleMetronome: () => void;
 
-    // Sidebar
-    sidebarOpen: boolean;
-    toggleSidebar: () => void;
-
     // Performance history
     performanceHistory: PerformanceResult[];
     addPerformanceResult: (result: PerformanceResult) => void;
@@ -54,9 +50,6 @@ export const useAppStore = create<AppState>((set) => ({
     metronomeEnabled: true,
     toggleMetronome: () =>
         set((state) => ({ metronomeEnabled: !state.metronomeEnabled })),
-
-    sidebarOpen: true,
-    toggleSidebar: () => set((state) => ({ sidebarOpen: !state.sidebarOpen })),
 
     performanceHistory: [],
     addPerformanceResult: (result) =>

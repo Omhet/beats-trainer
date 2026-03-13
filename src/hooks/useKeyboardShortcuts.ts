@@ -8,7 +8,6 @@ interface Options {
 
 export function useKeyboardShortcuts({ onPlayPause }: Options) {
     const toggleMetronome = useAppStore((s) => s.toggleMetronome);
-    const toggleSidebar = useAppStore((s) => s.toggleSidebar);
 
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
@@ -27,12 +26,9 @@ export function useKeyboardShortcuts({ onPlayPause }: Options) {
                 case KEYBOARD_SHORTCUTS.METRONOME_TOGGLE:
                     toggleMetronome();
                     break;
-                case KEYBOARD_SHORTCUTS.SIDEBAR_TOGGLE:
-                    toggleSidebar();
-                    break;
             }
         };
         document.addEventListener("keydown", handler);
         return () => document.removeEventListener("keydown", handler);
-    }, [onPlayPause, toggleMetronome, toggleSidebar]);
+    }, [onPlayPause, toggleMetronome]);
 }
