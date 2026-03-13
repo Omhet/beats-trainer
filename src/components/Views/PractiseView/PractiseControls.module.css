@@ -69,22 +69,6 @@
     width: 60px;
 }
 
-.metronomeToggle {
-    background: #222;
-    color: #888;
-    border: 1px solid #333;
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-size: 12px;
-    cursor: pointer;
-}
-
-.metronomeToggle.active {
-    background: #0070f3;
-    color: white;
-    border-color: #0070f3;
-}
-
 .bpmRow {
     display: flex;
     align-items: center;

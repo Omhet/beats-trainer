@@ -4,8 +4,6 @@ import styles from "./PractiseControls.module.css";
 interface PractiseControlsProps {
     isPlaying: boolean;
     onTogglePlay: () => void;
-    metronomeEnabled: boolean;
-    onToggleMetronome: () => void;
     volumes: {
         metronome: number;
         userDrums: number;
@@ -25,8 +23,6 @@ interface PractiseControlsProps {
 export const PractiseControls: React.FC<PractiseControlsProps> = ({
     isPlaying,
     onTogglePlay,
-    metronomeEnabled,
-    onToggleMetronome,
     volumes,
     onVolumeChange,
     showBackingTrack,
@@ -126,13 +122,6 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
                         </div>
                     )}
                 </div>
-
-                <button
-                    className={`${styles.metronomeToggle} ${metronomeEnabled ? styles.active : ""}`}
-                    onClick={onToggleMetronome}
-                >
-                    Metronome
-                </button>
             </div>
         </div>
     );

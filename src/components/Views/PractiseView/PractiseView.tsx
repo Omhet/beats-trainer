@@ -11,8 +11,6 @@ export function PractiseView() {
     const { songId, section } = useNavState();
     const songs = useAppStore((s) => s.songs);
     const volumes = useAppStore((s) => s.volumes);
-    const metronomeEnabled = useAppStore((s) => s.metronomeEnabled);
-    const toggleMetronome = useAppStore((s) => s.toggleMetronome);
     const setVolume = useAppStore((s) => s.setVolume);
     const practiseBpm = useAppStore((s) => s.practiseBpm);
     const setPractiseBpm = useAppStore((s) => s.setPractiseBpm);
@@ -29,8 +27,6 @@ export function PractiseView() {
             <PractiseControls
                 isPlaying={isPlaying}
                 onTogglePlay={togglePlay}
-                metronomeEnabled={metronomeEnabled}
-                onToggleMetronome={toggleMetronome}
                 volumes={{
                     metronome: volumes.metronome,
                     userDrums: volumes.userDrums,

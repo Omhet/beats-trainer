@@ -1,5 +1,4 @@
 import { KEYBOARD_SHORTCUTS } from "@/constants/keyboardShortcuts";
-import { useAppStore } from "@/store/useAppStore";
 import { useEffect } from "react";
 
 interface Options {
@@ -7,8 +6,6 @@ interface Options {
 }
 
 export function useKeyboardShortcuts({ onPlayPause }: Options) {
-    const toggleMetronome = useAppStore((s) => s.toggleMetronome);
-
     useEffect(() => {
         const handler = (e: KeyboardEvent) => {
             // Ignore shortcuts when typing in an input
@@ -23,12 +20,9 @@ export function useKeyboardShortcuts({ onPlayPause }: Options) {
                     e.preventDefault();
                     onPlayPause();
                     break;
-                case KEYBOARD_SHORTCUTS.METRONOME_TOGGLE:
-                    toggleMetronome();
-                    break;
             }
         };
         document.addEventListener("keydown", handler);
         return () => document.removeEventListener("keydown", handler);
-    }, [onPlayPause, toggleMetronome]);
+    }, [onPlayPause]);
 }

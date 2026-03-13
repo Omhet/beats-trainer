@@ -21,8 +21,6 @@ interface AppState {
     // Audio volumes
     volumes: Volumes;
     setVolume: (key: keyof Volumes, value: number) => void;
-    metronomeEnabled: boolean;
-    toggleMetronome: () => void;
 
     // Performance history
     performanceHistory: PerformanceResult[];
@@ -46,10 +44,6 @@ export const useAppStore = create<AppState>((set) => ({
         set((state) => ({
             volumes: { ...state.volumes, [key]: value },
         })),
-
-    metronomeEnabled: true,
-    toggleMetronome: () =>
-        set((state) => ({ metronomeEnabled: !state.metronomeEnabled })),
 
     performanceHistory: [],
     addPerformanceResult: (result) =>

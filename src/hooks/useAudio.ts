@@ -11,20 +11,14 @@ export interface LoadSongOptions {
 
 export function useAudio() {
     const volumes = useAppStore((s) => s.volumes);
-    const metronomeEnabled = useAppStore((s) => s.metronomeEnabled);
 
     // Keep audio volumes in sync with store
     // Note: midiPlayback routed through sampler — no separate MIDI gain stage
     useEffect(() => {
         AudioManager.sampler.setVolume(volumes.userDrums);
         AudioManager.backing.setVolume(volumes.backingTrack);
+        AudioManager.metronome.setVolume(volumes.metronome);
     }, [volumes]);
-
-    useEffect(() => {
-        AudioManager.metronome.setVolume(
-            metronomeEnabled ? volumes.metronome : 0,
-        );
-    }, [metronomeEnabled, volumes.metronome]);
 
     // Cleanup on unmount
     useEffect(() => {
