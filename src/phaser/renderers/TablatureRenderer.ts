@@ -10,7 +10,8 @@ const NOTE_MIN_R = 10;
 const NOTE_MAX_R = 20;
 const BAR_BEATS = 4; // beats per bar (4/4)
 
-const CYMBAL_PITCHES = new Set([42, 46, 44, 49, 57, 51, 53, 59]);
+const CYMBAL_PITCHES = new Set([42, 46, 49, 51]); // hi-hats and cymbals for special rendering
+const OPEN_HAT_PITCHES = new Set([46]);
 
 interface ActiveRow {
     label: string;
@@ -223,6 +224,9 @@ export class TablatureRenderer {
                     x + size,
                     y - size,
                 );
+                if (OPEN_HAT_PITCHES.has(note.pitch)) {
+                    this.dynamicGfx.strokeCircle(x, y, size * 1.4);
+                }
             } else {
                 const radius = isActive ? r * 1.3 : r;
                 this.dynamicGfx.fillStyle(colorHex, alpha);

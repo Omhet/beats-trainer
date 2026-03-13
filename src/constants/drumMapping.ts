@@ -6,8 +6,8 @@ export interface DrumInfo {
 export const DRUM_DEFINITION: Record<number, DrumInfo> = {
     36: { label: "Kick", color: "#FF0000" }, // bright red
     38: { label: "Snare", color: "#FFFF00" }, // yellow
-    42: { label: "Hat Closed", color: "#00FFFF" }, // cyan
-    46: { label: "Hat Open", color: "#00CED1" }, // dark cyan
+    42: { label: "Hi-Hat", color: "#00FFFF" }, // cyan - closed
+    46: { label: "Hi-Hat", color: "#00FFFF" }, // cyan - open
     47: { label: "Tom High", color: "#00FF00" }, // green
     45: { label: "Tom Mid", color: "#228B22" }, // forest green
     44: { label: "Tom Low", color: "#556B2F" }, // dark olive green
@@ -26,8 +26,7 @@ export const DRUM_ORDER = [
     "Tom High",
     "Tom Mid",
     "Tom Low",
-    "Hat Open",
-    "Hat Closed",
+    "Hi-Hat",
     "Snare",
     "Kick",
 ];
