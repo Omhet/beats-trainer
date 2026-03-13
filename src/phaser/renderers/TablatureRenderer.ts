@@ -4,8 +4,8 @@ import * as Phaser from "phaser";
 
 const LABEL_WIDTH = 120; // left margin for row labels
 const ROW_HEIGHT = 80; // px per drum row
-const LOOKAHEAD_S = 8; // seconds visible ahead of playhead
-const LOOKBEHIND_S = 2; // seconds visible behind playhead
+const LOOKAHEAD_BEATS = 16; // beats visible ahead of playhead
+const LOOKBEHIND_BEATS = 4; // beats visible behind playhead
 const NOTE_MIN_R = 10;
 const NOTE_MAX_R = 20;
 const BAR_BEATS = 4; // beats per bar (4/4)
@@ -168,54 +168,65 @@ export class TablatureRenderer {
     render(currentTime: number) {
         const { width, height } = this.scene.scale;
         const contentWidth = width - LABEL_WIDTH;
-        const pps = contentWidth / (LOOKBEHIND_S + LOOKAHEAD_S); // pixels per second
-        const playheadX = LABEL_WIDTH + LOOKBEHIND_S * pps;
+        const ppb = contentWidth / (LOOKBEHIND_BEATS + LOOKAHEAD_BEATS); // pixels per beat
+        const secondsPerBeat = 60 / this.bpm;
+        const currentBeat = currentTime / secondsPerBeat;
+        const playheadX = LABEL_WIDTH + LOOKBEHIND_BEATS * ppb;
 
         // 1. Draw static background handled by staticTex at depth 0
         this.dynamicGfx.clear();
 
         // 2. Draw bar, beat, and half-beat lines
-        const secondsPerBeat = 60 / this.bpm;
         const secondsPerBar = secondsPerBeat * BAR_BEATS;
-        const secondsPerHalfBeat = secondsPerBeat / 2;
-        const startTime = currentTime - LOOKBEHIND_S - secondsPerBar;
-        const endTime = currentTime + LOOKAHEAD_S + secondsPerBar;
+        const startBeat = currentBeat - LOOKBEHIND_BEATS;
+        const endBeat = currentBeat + LOOKAHEAD_BEATS;
 
         // Half-beat lines
-        const firstHalfBeat = Math.ceil(startTime / secondsPerHalfBeat);
-        const lastHalfBeat = Math.floor(endTime / secondsPerHalfBeat);
-        this.dynamicGfx.lineStyle(GRID_HALFBEAT_WIDTH, GRID_HALFBEAT_COLOR, GRID_HALFBEAT_ALPHA);
+        const firstHalfBeat = Math.ceil(startBeat * 2);
+        const lastHalfBeat = Math.floor(endBeat * 2);
+        this.dynamicGfx.lineStyle(
+            GRID_HALFBEAT_WIDTH,
+            GRID_HALFBEAT_COLOR,
+            GRID_HALFBEAT_ALPHA,
+        );
         for (let h = firstHalfBeat; h <= lastHalfBeat; h++) {
-            const t = h * secondsPerHalfBeat;
+            const b = h / 2;
             // Skip positions that will be drawn as beat or bar lines
             if (h % 2 === 0) continue;
-            const x = playheadX + (t - currentTime) * pps;
+            const x = playheadX + (b - currentBeat) * ppb;
             if (x >= LABEL_WIDTH && x <= width) {
                 this.dynamicGfx.lineBetween(x, 0, x, height);
             }
         }
 
         // Beat lines
-        const firstBeat = Math.ceil(startTime / secondsPerBeat);
-        const lastBeat = Math.floor(endTime / secondsPerBeat);
-        this.dynamicGfx.lineStyle(GRID_BEAT_WIDTH, GRID_BEAT_COLOR, GRID_BEAT_ALPHA);
+        const firstBeat = Math.ceil(startBeat);
+        const lastBeat = Math.floor(endBeat);
+        this.dynamicGfx.lineStyle(
+            GRID_BEAT_WIDTH,
+            GRID_BEAT_COLOR,
+            GRID_BEAT_ALPHA,
+        );
         for (let b = firstBeat; b <= lastBeat; b++) {
-            const t = b * secondsPerBeat;
             // Skip positions that will be drawn as bar lines
             if (b % BAR_BEATS === 0) continue;
-            const x = playheadX + (t - currentTime) * pps;
+            const x = playheadX + (b - currentBeat) * ppb;
             if (x >= LABEL_WIDTH && x <= width) {
                 this.dynamicGfx.lineBetween(x, 0, x, height);
             }
         }
 
         // Bar lines
-        const firstBar = Math.ceil(startTime / secondsPerBar);
-        const lastBar = Math.floor(endTime / secondsPerBar);
-        this.dynamicGfx.lineStyle(GRID_BAR_WIDTH, GRID_BAR_COLOR, GRID_BAR_ALPHA);
+        const firstBar = Math.ceil(startBeat / BAR_BEATS);
+        const lastBar = Math.floor(endBeat / BAR_BEATS);
+        this.dynamicGfx.lineStyle(
+            GRID_BAR_WIDTH,
+            GRID_BAR_COLOR,
+            GRID_BAR_ALPHA,
+        );
         for (let b = firstBar; b <= lastBar; b++) {
-            const barTime = b * secondsPerBar;
-            const x = playheadX + (barTime - currentTime) * pps;
+            const barBeat = b * BAR_BEATS;
+            const x = playheadX + (barBeat - currentBeat) * ppb;
             if (x >= LABEL_WIDTH && x <= width) {
                 this.dynamicGfx.lineBetween(x, 0, x, height);
             }
@@ -223,15 +234,15 @@ export class TablatureRenderer {
 
         // 3. Advance cursor: skip notes that are no longer visible
         // Reset cursor if time jumped backward (e.g. after Reset)
-        if (currentTime < this.lastRenderTime - 0.5) {
+        if (currentTime < this.lastRenderTime - 0.1) {
             this.cursor = 0;
         }
         this.lastRenderTime = currentTime;
 
-        const minVisible = currentTime - LOOKBEHIND_S - 0.1;
+        const minVisibleBeat = currentBeat - LOOKBEHIND_BEATS - 0.1;
         while (
             this.cursor < this.notes.length - 1 &&
-            this.notes[this.cursor].beat * secondsPerBeat < minVisible
+            this.notes[this.cursor].beat < minVisibleBeat
         ) {
             this.cursor++;
         }
@@ -239,8 +250,7 @@ export class TablatureRenderer {
         // 4. Draw notes
         for (let i = this.cursor; i < this.notes.length; i++) {
             const note = this.notes[i];
-            const noteTime = note.beat * secondsPerBeat;
-            const x = playheadX + (noteTime - currentTime) * pps;
+            const x = playheadX + (note.beat - currentBeat) * ppb;
             if (x > width + NOTE_MAX_R) break; // past right edge, stop
             if (x < LABEL_WIDTH - NOTE_MAX_R) continue; // before label area, skip
 
@@ -252,7 +262,8 @@ export class TablatureRenderer {
             const r =
                 NOTE_MIN_R + (note.velocity / 127) * (NOTE_MAX_R - NOTE_MIN_R);
 
-            const isActive = Math.abs(noteTime - currentTime) < 0.06;
+            const isActive =
+                Math.abs(note.beat - currentBeat) < 0.06 / secondsPerBeat;
             const colorHex = parseInt(drumInfo.color.replace("#", ""), 16);
             const alpha = isActive ? 1.0 : 0.85;
 
