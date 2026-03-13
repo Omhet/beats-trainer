@@ -40,6 +40,7 @@ export class TablatureRenderer {
     private pitchToRow: Record<number, number> = {};
     private bpm = 120;
     private cursor = 0; // advancing cursor for O(1) amortised note scan
+    private lastRenderTime = -1; // used to detect backward seeks
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -115,6 +116,7 @@ export class TablatureRenderer {
 
     resetCursor() {
         this.cursor = 0;
+        this.lastRenderTime = -1;
     }
 
     private getRowY(rowIndex: number, totalRows: number): number {
@@ -220,6 +222,12 @@ export class TablatureRenderer {
         }
 
         // 3. Advance cursor: skip notes that are no longer visible
+        // Reset cursor if time jumped backward (e.g. after Reset)
+        if (currentTime < this.lastRenderTime - 0.5) {
+            this.cursor = 0;
+        }
+        this.lastRenderTime = currentTime;
+
         const minVisible = currentTime - LOOKBEHIND_S - 0.1;
         while (
             this.cursor < this.notes.length - 1 &&
