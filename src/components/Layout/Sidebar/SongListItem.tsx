@@ -1,4 +1,4 @@
-import { SelectedView } from "@/store/useAppStore";
+import { SelectedView } from "../../../types/navigation";
 import { SongIndexEntry } from "@/types/song";
 import * as Accordion from "@radix-ui/react-accordion";
 import cn from "classnames";

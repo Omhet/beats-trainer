@@ -1,5 +1,6 @@
 import { useSongs } from "@/hooks/useSongs";
-import { SelectedView, useAppStore } from "@/store/useAppStore";
+import { useNavState } from "../../../hooks/useNavState";
+import { SelectedView } from "../../../types/navigation";
 import * as Accordion from "@radix-ui/react-accordion";
 import React from "react";
 import styles from "./Sidebar.module.css";
@@ -7,17 +8,10 @@ import { SongListItem } from "./SongListItem";
 
 export const Sidebar: React.FC = () => {
     const songs = useSongs();
-    const selectedSongId = useAppStore((s) => s.selectedSongId);
-    const selectedView = useAppStore((s) => s.selectedView);
-    const selectedSection = useAppStore((s) => s.selectedSection);
-    const setSelectedSong = useAppStore((s) => s.setSelectedSong);
-    const setSelectedView = useAppStore((s) => s.setSelectedView);
-    const setSelectedSection = useAppStore((s) => s.setSelectedSection);
+    const { songId, view, section, setSongView } = useNavState();
 
-    const handleSectionClick = (songId: string, section: string | null) => {
-        setSelectedSong(songId);
-        setSelectedView(SelectedView.Practise);
-        setSelectedSection(section);
+    const handleSectionClick = (clickedSongId: string, clickedSection: string | null) => {
+        setSongView(clickedSongId, SelectedView.Practise, clickedSection);
     };
 
     return (
@@ -42,19 +36,19 @@ export const Sidebar: React.FC = () => {
                             <SongListItem
                                 key={song.id}
                                 song={song}
-                                isActive={selectedSongId === song.id}
+                                isActive={songId === song.id}
                                 selectedView={
-                                    selectedSongId === song.id
-                                        ? selectedView
+                                    songId === song.id
+                                        ? view
                                         : null
                                 }
                                 selectedSection={
-                                    selectedSongId === song.id
-                                        ? selectedSection
+                                    songId === song.id
+                                        ? section
                                         : null
                                 }
-                                onSectionClick={(section) =>
-                                    handleSectionClick(song.id, section)
+                                onSectionClick={(sectionName) =>
+                                    handleSectionClick(song.id, sectionName)
                                 }
                             />
                         ))}

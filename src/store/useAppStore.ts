@@ -2,12 +2,6 @@ import { PerformanceResult } from "@/types/performance";
 import { SongIndexEntry } from "@/types/song";
 import { create } from "zustand";
 
-export enum SelectedView {
-    Learn = "learn",
-    Practise = "practise",
-    Perform = "perform",
-}
-
 interface Volumes {
     midiPlayback: number; // 0-1
     metronome: number; // 0-1
@@ -21,13 +15,7 @@ interface AppState {
     setSongs: (songs: SongIndexEntry[]) => void;
 
     // Navigation
-    selectedSongId: string | null;
-    selectedView: SelectedView | null;
-    selectedSection: string | null; // section name or null for full song
     practiseBpm: number;
-    setSelectedSong: (id: string | null) => void;
-    setSelectedView: (view: SelectedView | null) => void;
-    setSelectedSection: (section: string | null) => void;
     setPractiseBpm: (bpm: number) => void;
 
     // Audio volumes
@@ -49,13 +37,7 @@ export const useAppStore = create<AppState>((set) => ({
     songs: [],
     setSongs: (songs) => set({ songs }),
 
-    selectedSongId: null,
-    selectedView: null,
-    selectedSection: null,
     practiseBpm: 120,
-    setSelectedSong: (id) => set({ selectedSongId: id, selectedSection: null }),
-    setSelectedView: (view) => set({ selectedView: view }),
-    setSelectedSection: (section) => set({ selectedSection: section }),
     setPractiseBpm: (bpm) => set({ practiseBpm: bpm }),
 
     volumes: {

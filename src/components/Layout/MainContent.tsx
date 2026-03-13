@@ -1,16 +1,20 @@
 import { LessonView } from "@/components/Views/LessonView/LessonView";
 import { PerformView } from "@/components/Views/PerformView/PerformView";
 import { PractiseView } from "@/components/Views/PractiseView/PractiseView";
-import { SelectedView, useAppStore } from "@/store/useAppStore";
+import { useNavState } from "../../hooks/useNavState";
+import { SelectedView } from "../../types/navigation";
+import { useAppStore } from "@/store/useAppStore";
 import React from "react";
 import styles from "./MainContent.module.css";
 
 export const MainContent: React.FC = () => {
-    const selectedSongId = useAppStore((s) => s.selectedSongId);
-    const selectedView = useAppStore((s) => s.selectedView);
+    const { songId, view } = useNavState();
+    const songs = useAppStore((s) => s.songs);
 
     const renderView = () => {
-        if (!selectedSongId) {
+        const songExists = songs.find((s) => s.id === songId);
+        
+        if (!songId || !songExists) {
             return (
                 <div className={styles.welcome}>
                     <p>Select a song from the sidebar to get started</p>
@@ -18,7 +22,7 @@ export const MainContent: React.FC = () => {
             );
         }
 
-        switch (selectedView) {
+        switch (view) {
             case SelectedView.Learn:
                 return <LessonView />;
             case SelectedView.Practise:
