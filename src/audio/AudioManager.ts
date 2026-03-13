@@ -10,7 +10,8 @@ import { MidiPlayer } from "./MidiPlayer";
 class AudioManagerClass {
     readonly midi = new MidiPlayer();
     readonly metronome = new MetronomePlayer();
-    readonly sampler = new DrumSampler();
+    readonly playbackSampler = new DrumSampler();
+    readonly userInputSampler = new DrumSampler();
     readonly backing = new BackingTrackPlayer();
 
     private _started = false;
@@ -35,19 +36,24 @@ class AudioManagerClass {
         Tone.getTransport().stop();
         Tone.getTransport().seconds = 0;
 
-        // Load sampler (fire and forget, graceful if samples missing)
-        this.sampler.load(samplesBasePath).catch(() => {
+        // Load samplers (fire and forget, graceful if samples missing)
+        this.playbackSampler.load(samplesBasePath).catch(() => {
+            console.warn(
+                "DrumSampler: some samples failed to load, continuing without them",
+            );
+        });
+        this.userInputSampler.load(samplesBasePath).catch(() => {
             console.warn(
                 "DrumSampler: some samples failed to load, continuing without them",
             );
         });
 
-        // Load MIDI — wire sampler as the note callback; emit TRACK_END on the last note
+        // Load MIDI — wire playbackSampler as the note callback; emit TRACK_END on the last note
         this.midi.load(
             notes,
             bpm,
             (note, time) => {
-                this.sampler.trigger(note.pitch, note.velocity, time);
+                this.playbackSampler.trigger(note.pitch, note.velocity, time);
             },
             () => {
                 EventBus.emit(AppEvent.TRACK_END);
@@ -96,7 +102,8 @@ class AudioManagerClass {
         Tone.getTransport().stop();
         this.midi.dispose();
         this.metronome.dispose();
-        this.sampler.dispose();
+        this.playbackSampler.dispose();
+        this.userInputSampler.dispose();
         this.backing.dispose();
         this._started = false;
     }

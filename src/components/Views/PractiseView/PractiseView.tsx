@@ -1,7 +1,7 @@
 import { useKeyboardShortcuts } from "@/hooks/useKeyboardShortcuts";
+import { useNavState } from "@/hooks/useNavState";
 import { usePractise } from "@/hooks/usePractise";
 import { PhaserApp } from "@/PhaserApp";
-import { useNavState } from "@/hooks/useNavState";
 import { useAppStore } from "@/store/useAppStore";
 import { PractiseControls } from "./PractiseControls";
 import styles from "./PractiseView.module.css";
@@ -30,7 +30,8 @@ export function PractiseView() {
                 onReset={resetPlayback}
                 volumes={{
                     metronome: volumes.metronome,
-                    userDrums: volumes.userDrums,
+                    playbackDrums: volumes.playbackDrums,
+                    userInputDrums: volumes.userInputDrums,
                     backingTrack: volumes.backingTrack,
                 }}
                 onVolumeChange={(key, value) => setVolume(key, value)}

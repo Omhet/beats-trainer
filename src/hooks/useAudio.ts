@@ -15,7 +15,8 @@ export function useAudio() {
     // Keep audio volumes in sync with store
     // Note: midiPlayback routed through sampler — no separate MIDI gain stage
     useEffect(() => {
-        AudioManager.sampler.setVolume(volumes.userDrums);
+        AudioManager.playbackSampler.setVolume(volumes.playbackDrums);
+        AudioManager.userInputSampler.setVolume(volumes.userInputDrums);
         AudioManager.backing.setVolume(volumes.backingTrack);
         AudioManager.metronome.setVolume(volumes.metronome);
     }, [volumes]);

@@ -7,11 +7,12 @@ interface PractiseControlsProps {
     onReset: () => void;
     volumes: {
         metronome: number;
-        userDrums: number;
+        playbackDrums: number;
+        userInputDrums: number;
         backingTrack: number;
     };
     onVolumeChange: (
-        key: "metronome" | "userDrums" | "backingTrack",
+        key: "metronome" | "playbackDrums" | "userInputDrums" | "backingTrack",
         value: number,
     ) => void;
     showBackingTrack: boolean;
@@ -93,16 +94,32 @@ export const PractiseControls: React.FC<PractiseControlsProps> = ({
                         />
                     </div>
                     <div className={styles.volumeRow}>
-                        <label>Drums</label>
+                        <label>Track Drums</label>
                         <input
                             type="range"
                             min="0"
                             max="1"
                             step="0.01"
-                            value={volumes.userDrums}
+                            value={volumes.playbackDrums}
                             onChange={(e) =>
                                 onVolumeChange(
-                                    "userDrums",
+                                    "playbackDrums",
+                                    parseFloat(e.target.value),
+                                )
+                            }
+                        />
+                    </div>
+                    <div className={styles.volumeRow}>
+                        <label>User Drums</label>
+                        <input
+                            type="range"
+                            min="0"
+                            max="1"
+                            step="0.01"
+                            value={volumes.userInputDrums}
+                            onChange={(e) =>
+                                onVolumeChange(
+                                    "userInputDrums",
                                     parseFloat(e.target.value),
                                 )
                             }

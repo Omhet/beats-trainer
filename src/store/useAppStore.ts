@@ -5,7 +5,8 @@ import { create } from "zustand";
 interface Volumes {
     midiPlayback: number; // 0-1
     metronome: number; // 0-1
-    userDrums: number; // 0-1
+    playbackDrums: number; // 0-1
+    userInputDrums: number; // 0-1
     backingTrack: number; // 0-1
 }
 
@@ -37,7 +38,8 @@ export const useAppStore = create<AppState>((set) => ({
     volumes: {
         midiPlayback: 0.8,
         metronome: 0.5,
-        userDrums: 1.0,
+        playbackDrums: 1.0,
+        userInputDrums: 1.0,
         backingTrack: 0.7,
     },
     setVolume: (key, value) =>

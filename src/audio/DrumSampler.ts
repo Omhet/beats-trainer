@@ -1,16 +1,9 @@
+import { DRUM_DEFINITION } from "@/constants/drumMapping";
 import * as Tone from "tone";
 
-const PITCH_TO_SAMPLE: Record<number, string> = {
-    36: "kick.wav",
-    38: "snare.wav",
-    42: "hihat_closed.wav",
-    46: "hihat_open.wav",
-    47: "tom_high.wav",
-    45: "tom_mid.wav",
-    44: "tom_floor_low.wav",
-    49: "crash_1.wav",
-    51: "ride.wav",
-};
+const PITCH_TO_SAMPLE: Record<number, string> = Object.fromEntries(
+    Object.entries(DRUM_DEFINITION).map(([p, d]) => [Number(p), d.sampleFile]),
+);
 
 export class DrumSampler {
     private players: Map<string, Tone.Player> = new Map();
