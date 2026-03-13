@@ -26,7 +26,8 @@
         "predev": "tsx scripts/generate-song-index.ts",
         "prebuild": "tsx scripts/generate-song-index.ts",
         "dev-nolog": "vite --config vite/config.dev.mjs",
-        "build-nolog": "vite build --config vite/config.prod.mjs"
+        "build-nolog": "vite build --config vite/config.prod.mjs",
+        "create-demo-midi": "tsx scripts/create-demo-midi.ts"
     },
     "dependencies": {
         "@mdx-js/mdx": "^3.1.1",
