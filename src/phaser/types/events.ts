@@ -35,6 +35,7 @@ export enum AppEvent {
     LOAD_TABLATURE = "load-tablature",
     TAB_PLAY = "tab-play",
     TAB_PAUSE = "tab-pause",
+    TAB_RESET = "tab-reset",
     MIDI_INPUT_NOTE = "midi-input-note",
 
     /** The last note of the loaded track has been played */
@@ -60,6 +61,7 @@ export interface EventPayloads {
     };
     [AppEvent.TAB_PLAY]: void;
     [AppEvent.TAB_PAUSE]: void;
+    [AppEvent.TAB_RESET]: void;
     [AppEvent.MIDI_INPUT_NOTE]: {
         pitch: number;
         velocity: number;

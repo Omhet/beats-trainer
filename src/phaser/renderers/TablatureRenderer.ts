@@ -1,4 +1,9 @@
 import { DRUM_DEFINITION, DRUM_ORDER } from "@/constants/drumMapping";
+import {
+    GOOD_HIT_WINDOW_MS,
+    GREEN_PULSE_DURATION_MS,
+    LABEL_FLASH_DURATION_MS,
+} from "@/constants/tablatureConfig";
 import { NoteEvent } from "@/types/midi";
 import * as Phaser from "phaser";
 
@@ -41,6 +46,15 @@ export class TablatureRenderer {
     private bpm = 120;
     private cursor = 0; // advancing cursor for O(1) amortised note scan
     private lastRenderTime = -1; // used to detect backward seeks
+
+    // User hit feedback state
+    private hitFlashes: Map<number, number> = new Map(); // pitch → Date.now() of last hit
+    private userHitMarkers: Array<{
+        beat: number;
+        rowIndex: number;
+        addedAt: number;
+        good: boolean;
+    }> = [];
 
     constructor(scene: Phaser.Scene) {
         this.scene = scene;
@@ -116,6 +130,51 @@ export class TablatureRenderer {
     resetCursor() {
         this.cursor = 0;
         this.lastRenderTime = -1;
+    }
+
+    /**
+     * Record a user drum hit for visual feedback.
+     * @param pitch       Standard GM pitch (already resolved through device map)
+     * @param currentTime Tone.Transport.seconds at the moment of the hit
+     * @param isPlaying   Whether the track is currently playing
+     */
+    recordUserHit(pitch: number, currentTime: number, isPlaying: boolean) {
+        // Always flash the row label
+        this.hitFlashes.set(pitch, Date.now());
+
+        // Only add beat-positioned markers when the track is playing
+        const rowIndex = this.pitchToRow[pitch];
+        if (!isPlaying || rowIndex === undefined) return;
+
+        const secondsPerBeat = 60 / this.bpm;
+        const currentBeat = currentTime / secondsPerBeat;
+        const windowBeats = GOOD_HIT_WINDOW_MS / 1000 / secondsPerBeat;
+
+        const rowInfo = this.activeRows[rowIndex];
+        const rowPitchSet = new Set(rowInfo?.pitches ?? []);
+        let good = false;
+        for (const note of this.notes) {
+            if (
+                rowPitchSet.has(note.pitch) &&
+                Math.abs(note.beat - currentBeat) <= windowBeats
+            ) {
+                good = true;
+                break;
+            }
+        }
+
+        this.userHitMarkers.push({
+            beat: currentBeat,
+            rowIndex,
+            addedAt: Date.now(),
+            good,
+        });
+    }
+
+    /** Clear all user hit markers and flashes (call on playback reset). */
+    clearUserHits() {
+        this.hitFlashes.clear();
+        this.userHitMarkers = [];
     }
 
     private getRowY(rowIndex: number, totalRows: number): number {
@@ -321,6 +380,65 @@ export class TablatureRenderer {
                 const radius = isActive ? r * 1.3 : r;
                 this.dynamicGfx.fillStyle(colorHex, alpha);
                 this.dynamicGfx.fillCircle(x, y, radius);
+            }
+        }
+
+        // 4.5. Draw label flash backgrounds (drawn on dynamicGfx at depth 1,
+        //       so they appear behind label Text objects at depth 2)
+        const flashNow = Date.now();
+        for (const rowInfo of this.activeRows) {
+            let latestFlash = 0;
+            for (const pitch of rowInfo.pitches) {
+                const t = this.hitFlashes.get(pitch);
+                if (t !== undefined && t > latestFlash) latestFlash = t;
+            }
+            if (latestFlash > 0) {
+                const elapsed = flashNow - latestFlash;
+                if (elapsed < LABEL_FLASH_DURATION_MS) {
+                    const alpha =
+                        0.45 * (1 - elapsed / LABEL_FLASH_DURATION_MS);
+                    const colorHex = parseInt(
+                        rowInfo.color.replace("#", ""),
+                        16,
+                    );
+                    const y = this.getRowY(rowInfo.row, this.activeRows.length);
+                    this.dynamicGfx.fillStyle(colorHex, alpha);
+                    this.dynamicGfx.fillRect(
+                        0,
+                        y - ROW_HEIGHT / 2,
+                        LABEL_WIDTH,
+                        ROW_HEIGHT,
+                    );
+                }
+            }
+        }
+
+        // 4.6. Draw user hit markers (scrolling in beat-space)
+        const markerNow = Date.now();
+        const HIT_MARKER_R = NOTE_MIN_R * 0.65;
+        for (const marker of this.userHitMarkers) {
+            const x = this.getNoteX(marker.beat, currentBeat, ppb, playheadX);
+            if (x < LABEL_WIDTH - NOTE_MAX_R * 3 || x > width + NOTE_MAX_R * 3)
+                continue;
+            const y = this.getRowY(marker.rowIndex, this.activeRows.length);
+            const elapsed = markerNow - marker.addedAt;
+
+            if (marker.good) {
+                // Pulse phase: expanding fading ring
+                if (elapsed < GREEN_PULSE_DURATION_MS) {
+                    const t = elapsed / GREEN_PULSE_DURATION_MS;
+                    const pulseR = NOTE_MIN_R * (1 + t * 1.8);
+                    const pulseAlpha = 0.65 * (1 - t);
+                    this.dynamicGfx.fillStyle(0x00ff66, pulseAlpha);
+                    this.dynamicGfx.fillCircle(x, y, pulseR);
+                }
+                // Steady small green dot
+                this.dynamicGfx.fillStyle(0x00cc55, 0.9);
+                this.dynamicGfx.fillCircle(x, y, HIT_MARKER_R);
+            } else {
+                // Steady small red dot
+                this.dynamicGfx.fillStyle(0xff3333, 0.85);
+                this.dynamicGfx.fillCircle(x, y, HIT_MARKER_R);
             }
         }
 

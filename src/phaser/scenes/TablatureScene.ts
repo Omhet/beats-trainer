@@ -30,6 +30,20 @@ export class TablatureScene extends Scene {
     private onTabPause = () => {
         this.isPlaying = false;
     };
+    private onTabReset = () => {
+        this.tabRenderer.clearUserHits();
+    };
+    private onMidiInputNote = (payload: {
+        pitch: number;
+        velocity: number;
+        time: number;
+    }) => {
+        this.tabRenderer.recordUserHit(
+            payload.pitch,
+            Tone.getTransport().seconds,
+            this.isPlaying,
+        );
+    };
 
     constructor() {
         super("TablatureScene");
@@ -41,6 +55,8 @@ export class TablatureScene extends Scene {
         EventBus.on(AppEvent.LOAD_TABLATURE, this.onLoadTablature);
         EventBus.on(AppEvent.TAB_PLAY, this.onTabPlay);
         EventBus.on(AppEvent.TAB_PAUSE, this.onTabPause);
+        EventBus.on(AppEvent.TAB_RESET, this.onTabReset);
+        EventBus.on(AppEvent.MIDI_INPUT_NOTE, this.onMidiInputNote);
 
         // Handle canvas resize: re-render static layer
         this.scale.on("resize", () => {
@@ -63,5 +79,7 @@ export class TablatureScene extends Scene {
         EventBus.off(AppEvent.LOAD_TABLATURE, this.onLoadTablature);
         EventBus.off(AppEvent.TAB_PLAY, this.onTabPlay);
         EventBus.off(AppEvent.TAB_PAUSE, this.onTabPause);
+        EventBus.off(AppEvent.TAB_RESET, this.onTabReset);
+        EventBus.off(AppEvent.MIDI_INPUT_NOTE, this.onMidiInputNote);
     }
 }

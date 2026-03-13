@@ -34,10 +34,7 @@ export function usePractise() {
 
         const fetchAndParse = async () => {
             try {
-                const buffer = await loadSongMidi(
-                    songId,
-                    section ?? undefined,
-                );
+                const buffer = await loadSongMidi(songId, section ?? undefined);
                 if (cancelled) return;
                 const notes = parseMidi(buffer);
                 setParsedNotes(notes);
@@ -107,6 +104,7 @@ export function usePractise() {
     const resetPlayback = useCallback(() => {
         audioReset();
         EventBus.emit(AppEvent.TAB_PAUSE);
+        EventBus.emit(AppEvent.TAB_RESET);
         setIsPlaying(false);
     }, [audioReset]);
 
