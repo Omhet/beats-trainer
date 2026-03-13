@@ -10,6 +10,16 @@ const NOTE_MIN_R = 10;
 const NOTE_MAX_R = 20;
 const BAR_BEATS = 4; // beats per bar (4/4)
 
+const GRID_BAR_COLOR = 0x555555;
+const GRID_BAR_ALPHA = 0.75;
+const GRID_BAR_WIDTH = 1;
+const GRID_BEAT_COLOR = 0x4a4a4a;
+const GRID_BEAT_ALPHA = 0.45;
+const GRID_BEAT_WIDTH = 1;
+const GRID_HALFBEAT_COLOR = 0x444444;
+const GRID_HALFBEAT_ALPHA = 0.2;
+const GRID_HALFBEAT_WIDTH = 1;
+
 const CYMBAL_PITCHES = new Set([42, 46, 49, 51]); // hi-hats and cymbals for special rendering
 const OPEN_HAT_PITCHES = new Set([46]);
 
@@ -162,15 +172,45 @@ export class TablatureRenderer {
         // 1. Draw static background handled by staticTex at depth 0
         this.dynamicGfx.clear();
 
-        // 2. Draw bar lines
+        // 2. Draw bar, beat, and half-beat lines
         const secondsPerBeat = 60 / this.bpm;
         const secondsPerBar = secondsPerBeat * BAR_BEATS;
+        const secondsPerHalfBeat = secondsPerBeat / 2;
         const startTime = currentTime - LOOKBEHIND_S - secondsPerBar;
         const endTime = currentTime + LOOKAHEAD_S + secondsPerBar;
+
+        // Half-beat lines
+        const firstHalfBeat = Math.ceil(startTime / secondsPerHalfBeat);
+        const lastHalfBeat = Math.floor(endTime / secondsPerHalfBeat);
+        this.dynamicGfx.lineStyle(GRID_HALFBEAT_WIDTH, GRID_HALFBEAT_COLOR, GRID_HALFBEAT_ALPHA);
+        for (let h = firstHalfBeat; h <= lastHalfBeat; h++) {
+            const t = h * secondsPerHalfBeat;
+            // Skip positions that will be drawn as beat or bar lines
+            if (h % 2 === 0) continue;
+            const x = playheadX + (t - currentTime) * pps;
+            if (x >= LABEL_WIDTH && x <= width) {
+                this.dynamicGfx.lineBetween(x, 0, x, height);
+            }
+        }
+
+        // Beat lines
+        const firstBeat = Math.ceil(startTime / secondsPerBeat);
+        const lastBeat = Math.floor(endTime / secondsPerBeat);
+        this.dynamicGfx.lineStyle(GRID_BEAT_WIDTH, GRID_BEAT_COLOR, GRID_BEAT_ALPHA);
+        for (let b = firstBeat; b <= lastBeat; b++) {
+            const t = b * secondsPerBeat;
+            // Skip positions that will be drawn as bar lines
+            if (b % BAR_BEATS === 0) continue;
+            const x = playheadX + (t - currentTime) * pps;
+            if (x >= LABEL_WIDTH && x <= width) {
+                this.dynamicGfx.lineBetween(x, 0, x, height);
+            }
+        }
+
+        // Bar lines
         const firstBar = Math.ceil(startTime / secondsPerBar);
         const lastBar = Math.floor(endTime / secondsPerBar);
-
-        this.dynamicGfx.lineStyle(1, 0x555555, 0.6);
+        this.dynamicGfx.lineStyle(GRID_BAR_WIDTH, GRID_BAR_COLOR, GRID_BAR_ALPHA);
         for (let b = firstBar; b <= lastBar; b++) {
             const barTime = b * secondsPerBar;
             const x = playheadX + (barTime - currentTime) * pps;
@@ -181,10 +221,9 @@ export class TablatureRenderer {
 
         // 3. Advance cursor: skip notes that are no longer visible
         const minVisible = currentTime - LOOKBEHIND_S - 0.1;
-        const secondsPerBeatVal = 60 / this.bpm;
         while (
             this.cursor < this.notes.length - 1 &&
-            this.notes[this.cursor].beat * secondsPerBeatVal < minVisible
+            this.notes[this.cursor].beat * secondsPerBeat < minVisible
         ) {
             this.cursor++;
         }
@@ -192,7 +231,7 @@ export class TablatureRenderer {
         // 4. Draw notes
         for (let i = this.cursor; i < this.notes.length; i++) {
             const note = this.notes[i];
-            const noteTime = note.beat * secondsPerBeatVal;
+            const noteTime = note.beat * secondsPerBeat;
             const x = playheadX + (noteTime - currentTime) * pps;
             if (x > width + NOTE_MAX_R) break; // past right edge, stop
             if (x < LABEL_WIDTH - NOTE_MAX_R) continue; // before label area, skip
