@@ -9,7 +9,6 @@ export class TablatureScene extends Scene {
     private tabRenderer!: TablatureRenderer;
     private notes: NoteEvent[] = [];
     private bpm = 120;
-    private totalDuration = 0;
     private ready = false;
     private isPlaying = false;
 
@@ -17,11 +16,9 @@ export class TablatureScene extends Scene {
     private onLoadTablature = (payload: {
         notes: NoteEvent[];
         bpm: number;
-        totalDuration: number;
     }) => {
         this.notes = payload.notes;
         this.bpm = payload.bpm;
-        this.totalDuration = payload.totalDuration;
         this.isPlaying = false;
         this.tabRenderer.loadNotes(payload.notes, payload.bpm);
         this.tabRenderer.renderStaticLayer();

@@ -66,12 +66,6 @@ export function usePractise() {
         if (!song) return;
 
         const secondsPerBeat = 60 / practiseBpm;
-        const totalDuration =
-            parsedNotes.length > 0
-                ? parsedNotes[parsedNotes.length - 1].beat * secondsPerBeat +
-                  0.5
-                : 0;
-
 
         // Stop playback and reset
         if (isPlayingRef.current) {
@@ -88,7 +82,6 @@ export function usePractise() {
             backingTrackUrl: song.hasDrumlessTrack
                 ? `/assets/songs/${songId}/drumless.mp3`
                 : undefined,
-            totalDuration,
         }).catch((err) =>
             console.error("usePractise: failed to reload song at new BPM", err),
         );
@@ -96,7 +89,6 @@ export function usePractise() {
         EventBus.emit(AppEvent.LOAD_TABLATURE, {
             notes: parsedNotes,
             bpm: practiseBpm,
-            totalDuration,
         });
     }, [parsedNotes, practiseBpm, songId, songs, loadSong, pause]);
 
@@ -117,6 +109,21 @@ export function usePractise() {
         EventBus.emit(AppEvent.TAB_PAUSE);
         setIsPlaying(false);
     }, [audioReset]);
+
+    // Effect 3: when track ends, behave as if user pressed Reset then Play
+    useEffect(() => {
+        const handleTrackEnd = async () => {
+            // Uncommnt when needed — currently just keeps playing indefinitely, which is fine for testing
+            // resetPlayback();
+            // await play();
+            // EventBus.emit(AppEvent.TAB_PLAY);
+            // setIsPlaying(true);
+        };
+        EventBus.on(AppEvent.TRACK_END, handleTrackEnd);
+        return () => {
+            EventBus.off(AppEvent.TRACK_END, handleTrackEnd);
+        };
+    }, [resetPlayback, play]);
 
     return { isPlaying, togglePlay, resetPlayback };
 }

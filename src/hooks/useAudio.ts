@@ -7,7 +7,6 @@ export interface LoadSongOptions {
     notes: NoteEvent[];
     bpm: number;
     backingTrackUrl?: string;
-    totalDuration?: number;
 }
 
 export function useAudio() {
@@ -35,7 +34,6 @@ export function useAudio() {
             options.bpm,
             "/assets/samples/drums",
             options.backingTrackUrl,
-            options.totalDuration,
         );
     }, []);
 

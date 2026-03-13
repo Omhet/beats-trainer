@@ -1,3 +1,5 @@
+import { EventBus } from "@/phaser/EventBus";
+import { AppEvent } from "@/phaser/types/events";
 import { NoteEvent } from "@/types/midi";
 import * as Tone from "tone";
 import { BackingTrackPlayer } from "./BackingTrackPlayer";
@@ -29,19 +31,9 @@ class AudioManagerClass {
         bpm: number,
         samplesBasePath: string,
         backingTrackUrl?: string,
-        totalDuration?: number,
     ): Promise<void> {
         Tone.getTransport().stop();
         Tone.getTransport().seconds = 0;
-
-        // Configure looping
-        if (totalDuration && totalDuration > 0) {
-            Tone.getTransport().loop = true;
-            Tone.getTransport().loopStart = 0;
-            Tone.getTransport().loopEnd = totalDuration;
-        } else {
-            Tone.getTransport().loop = false;
-        }
 
         // Load sampler (fire and forget, graceful if samples missing)
         this.sampler.load(samplesBasePath).catch(() => {
@@ -50,10 +42,17 @@ class AudioManagerClass {
             );
         });
 
-        // Load MIDI — wire sampler as the note callback, forwarding WebAudio time for accurate scheduling
-        this.midi.load(notes, bpm, (note, time) => {
-            this.sampler.trigger(note.pitch, note.velocity, time);
-        });
+        // Load MIDI — wire sampler as the note callback; emit TRACK_END on the last note
+        this.midi.load(
+            notes,
+            bpm,
+            (note, time) => {
+                this.sampler.trigger(note.pitch, note.velocity, time);
+            },
+            () => {
+                EventBus.emit(AppEvent.TRACK_END);
+            },
+        );
 
         // Load metronome (re-arms at new BPM)
         this.metronome.start(bpm);

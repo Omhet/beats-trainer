@@ -36,6 +36,9 @@ export enum AppEvent {
     TAB_PLAY = "tab-play",
     TAB_PAUSE = "tab-pause",
     MIDI_INPUT_NOTE = "midi-input-note",
+
+    /** The last note of the loaded track has been played */
+    TRACK_END = "track-end",
 }
 
 /**
@@ -54,7 +57,6 @@ export interface EventPayloads {
     [AppEvent.LOAD_TABLATURE]: {
         notes: NoteEvent[];
         bpm: number;
-        totalDuration: number;
     };
     [AppEvent.TAB_PLAY]: void;
     [AppEvent.TAB_PAUSE]: void;
@@ -63,6 +65,7 @@ export interface EventPayloads {
         velocity: number;
         time: number;
     };
+    [AppEvent.TRACK_END]: void;
     // Scene lifecycle payloads
     [AppEvent.CURRENT_SCENE_READY]: Phaser.Scene;
 }
