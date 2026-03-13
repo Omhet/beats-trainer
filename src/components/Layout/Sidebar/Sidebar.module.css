@@ -30,3 +30,28 @@
 .accordion {
     width: 100%;
 }
+
+.footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid #222;
+    flex-shrink: 0;
+}
+
+.settingsLink {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #555;
+    cursor: pointer;
+    font-size: 0.875rem;
+    padding: 0.4rem 0;
+    transition: color 0.2s;
+    width: 100%;
+    text-align: left;
+}
+
+.settingsLink:hover {
+    color: #ccc;
+}

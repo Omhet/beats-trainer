@@ -1,0 +1,89 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.item {
+    background-color: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.itemHeader {
+    display: flex;
+}
+
+.trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0.9rem 1.25rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    text-align: left;
+    transition: background-color 0.15s;
+}
+
+.trigger:hover {
+    background-color: #1a1a1a;
+}
+
+.trigger[data-state="open"] {
+    background-color: #1a1a1a;
+    border-bottom: 1px solid #222;
+}
+
+.chevron {
+    font-size: 0.65rem;
+    color: #555;
+    transition: transform 0.2s;
+}
+
+.trigger[data-state="open"] .chevron {
+    transform: rotate(180deg);
+}
+
+.content {
+    padding: 1.25rem;
+}
+
+.presetRow {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.presetLabel {
+    color: #666;
+    font-size: 0.8rem;
+    white-space: nowrap;
+}
+
+.presetSelect {
+    background-color: #1a1a1a;
+    border: 1px solid #333;
+    color: #ccc;
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.presetSelect:hover {
+    border-color: #555;
+}
+
+.presetSelect option {
+    background-color: #1a1a1a;
+}
+

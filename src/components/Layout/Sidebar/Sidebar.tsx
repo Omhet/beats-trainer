@@ -1,6 +1,7 @@
 import { useSongs } from "@/hooks/useSongs";
 import * as Accordion from "@radix-ui/react-accordion";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useNavState } from "../../../hooks/useNavState";
 import { SelectedView } from "../../../types/navigation";
 import styles from "./Sidebar.module.css";
@@ -8,6 +9,7 @@ import { SongListItem } from "./SongListItem";
 
 export const Sidebar: React.FC = () => {
     const songs = useSongs();
+    const navigate = useNavigate();
     const { songId, view, section, setSongView } = useNavState();
     const [openItem, setOpenItem] = React.useState<string | undefined>(
         songId || undefined,
@@ -64,6 +66,15 @@ export const Sidebar: React.FC = () => {
                     </Accordion.Root>
                 )}
             </div>
+
+            <footer className={styles.footer}>
+                <button
+                    className={styles.settingsLink}
+                    onClick={() => navigate("/settings")}
+                >
+                    ⚙ Settings
+                </button>
+            </footer>
         </aside>
     );
 };

@@ -1,0 +1,72 @@
+.page {
+    min-height: 100vh;
+    background-color: #0d0d0d;
+    color: #fff;
+    display: flex;
+    flex-direction: column;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+    padding: 1.25rem 2rem;
+    border-bottom: 1px solid #222;
+    background-color: #111;
+}
+
+.backBtn {
+    background: transparent;
+    border: 1px solid #333;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0.4rem 0.9rem;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    transition:
+        border-color 0.2s,
+        color 0.2s;
+    white-space: nowrap;
+}
+
+.backBtn:hover {
+    border-color: #e63946;
+    color: #fff;
+}
+
+.title {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.content {
+    flex: 1;
+    padding: 2rem;
+    max-width: 860px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+.section {
+    margin-bottom: 2.5rem;
+}
+
+.sectionTitle {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #e63946;
+    margin: 0 0 1rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.emptyState {
+    color: #555;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
