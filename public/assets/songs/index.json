@@ -8,5 +8,15 @@
         "path": "demo_song",
         "sections": [],
         "hasDrumlessTrack": false
+    },
+    {
+        "title": "My Demo Song",
+        "artist": "Me",
+        "genre": "Rock",
+        "bpm": 120,
+        "id": "my_demo_song",
+        "path": "my_demo_song",
+        "sections": [],
+        "hasDrumlessTrack": false
     }
 ]
