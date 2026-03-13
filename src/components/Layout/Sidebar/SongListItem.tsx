@@ -1,8 +1,8 @@
-import { SelectedView } from "../../../types/navigation";
 import { SongIndexEntry } from "@/types/song";
 import * as Accordion from "@radix-ui/react-accordion";
 import cn from "classnames";
 import React from "react";
+import { SelectedView } from "../../../types/navigation";
 import styles from "./SongListItem.module.css";
 
 interface SongListItemProps {
@@ -23,7 +23,12 @@ export const SongListItem: React.FC<SongListItemProps> = ({
     const isPractiseActive = isActive && selectedView === SelectedView.Practise;
 
     return (
-        <Accordion.Item value={song.id} className={styles.root}>
+        <Accordion.Item
+            value={song.id}
+            className={cn(styles.root, {
+                [styles.rootActive]: isActive,
+            })}
+        >
             <Accordion.Header className={styles.itemHeader}>
                 <Accordion.Trigger className={styles.trigger}>
                     <span className={styles.songTitle}>{song.title}</span>

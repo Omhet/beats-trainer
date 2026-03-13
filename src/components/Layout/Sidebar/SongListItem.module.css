@@ -1,5 +1,10 @@
 .root {
     border-bottom: 1px solid #222;
+    transition: border-left 0.2s;
+}
+
+.rootActive {
+    border-left: 3px solid #e63946;
 }
 
 .itemHeader {
@@ -26,7 +31,6 @@
 
 .trigger[data-state="open"] {
     background-color: #1a1a1a;
-    border-left: 3px solid #e63946;
 }
 
 .songTitle {
