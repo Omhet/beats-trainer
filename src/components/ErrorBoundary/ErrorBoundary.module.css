@@ -1,0 +1,138 @@
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 2rem;
+    background-color: #1a1a1a;
+    color: #f5f5f5;
+    font-family:
+        system-ui,
+        -apple-system,
+        sans-serif;
+    text-align: center;
+}
+
+.content {
+    max-width: 800px;
+    width: 100%;
+}
+
+.title {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: #ff4757;
+}
+
+.message {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    opacity: 0.9;
+}
+
+.actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #444;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #555;
+}
+
+.stackContainer {
+    text-align: left;
+    background-color: #2d2d2d;
+    padding: 1rem;
+    border-radius: 8px;
+    overflow-x: auto;
+    border: 1px solid #444;
+}
+
+.stack {
+    margin: 0;
+    font-family:
+        "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
+    font-size: 0.9rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: #ffa502;
+}
+
+.accordionRoot {
+    width: 100%;
+    margin-top: 1rem;
+}
+
+.accordionItem {
+    border-radius: 4px;
+}
+
+.accordionTrigger {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #444;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    width: auto;
+    margin: 0 auto;
+    display: block;
+}
+
+.accordionTrigger:hover {
+    background-color: #555;
+}
+
+.accordionTrigger[data-state="open"] {
+    background-color: #ff4757;
+}
+
+.accordionContent {
+    overflow: hidden;
+    animation: slideDown 300ms cubic-bezier(0.87, 0, 0.13, 1);
+    margin-top: 1rem;
+}
+
+.accordionContent[data-state="closed"] {
+    animation: slideUp 300ms cubic-bezier(0.87, 0, 0.13, 1);
+}
+
+@keyframes slideDown {
+    from {
+        height: 0;
+        opacity: 0;
+    }
+    to {
+        height: var(--radix-accordion-content-height);
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        height: var(--radix-accordion-content-height);
+        opacity: 1;
+    }
+    to {
+        height: 0;
+        opacity: 0;
+    }
+}
+

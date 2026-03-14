@@ -1,3 +1,4 @@
+import ErrorBoundary from "@/components/ErrorBoundary/ErrorBoundary";
 import { useMidiInput } from "@/hooks/useMidiInput";
 import { MainPage } from "@/pages/MainPage";
 import { SettingsPage } from "@/pages/SettingsPage/SettingsPage";
@@ -6,7 +7,11 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 
 function AppRoot() {
     useMidiInput();
-    return <Outlet />;
+    return (
+        <ErrorBoundary>
+            <Outlet />
+        </ErrorBoundary>
+    );
 }
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
