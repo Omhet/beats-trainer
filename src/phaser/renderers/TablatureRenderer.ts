@@ -1,29 +1,44 @@
 import { DRUM_DEFINITION, DRUM_ORDER } from "@/constants/drumMapping";
 import {
+    ACTIVE_NOTE_WINDOW_SECONDS,
+    BAD_HIT_COLOR,
+    BAR_BEATS,
+    BG_COLOR,
+    CYMBAL_SCALE_ACTIVE,
+    GOOD_HIT_COLOR,
     GOOD_HIT_WINDOW_MS,
     GREEN_PULSE_DURATION_MS,
+    GRID_BAR_ALPHA,
+    GRID_BAR_COLOR,
+    GRID_BAR_WIDTH,
+    GRID_BEAT_ALPHA,
+    GRID_BEAT_COLOR,
+    GRID_BEAT_WIDTH,
+    GRID_HALFBEAT_ALPHA,
+    GRID_HALFBEAT_COLOR,
+    GRID_HALFBEAT_WIDTH,
+    HIT_MARKER_SCALE,
+    LABEL_FLASH_ALPHA_MAX,
     LABEL_FLASH_DURATION_MS,
+    LABEL_WIDTH,
+    LOOKAHEAD_BEATS,
+    LOOKBEHIND_BEATS,
+    NOTE_MAX_R,
+    NOTE_MIN_R,
+    NOTE_SCALE_ACTIVE,
+    PLAYHEAD_ALPHA,
+    PLAYHEAD_COLOR,
+    PLAYHEAD_WIDTH,
+    PULSE_ALPHA_MAX,
+    PULSE_COLOR,
+    PULSE_SCALE_MAX,
+    ROW_HEIGHT,
+    SEPARATOR_LINE_COLOR,
+    STAFF_LINE_ALPHA,
+    STAFF_LINE_COLOR,
 } from "@/constants/tablatureConfig";
 import { NoteEvent } from "@/types/midi";
 import * as Phaser from "phaser";
-
-const LABEL_WIDTH = 120; // left margin for row labels
-const ROW_HEIGHT = 80; // px per drum row
-const LOOKAHEAD_BEATS = 16; // beats visible ahead of playhead
-const LOOKBEHIND_BEATS = 4; // beats visible behind playhead
-const NOTE_MIN_R = 10;
-const NOTE_MAX_R = 20;
-const BAR_BEATS = 4; // beats per bar (4/4)
-
-const GRID_BAR_COLOR = 0x555555;
-const GRID_BAR_ALPHA = 0.75;
-const GRID_BAR_WIDTH = 1;
-const GRID_BEAT_COLOR = 0x4a4a4a;
-const GRID_BEAT_ALPHA = 0.45;
-const GRID_BEAT_WIDTH = 1;
-const GRID_HALFBEAT_COLOR = 0x444444;
-const GRID_HALFBEAT_ALPHA = 0.2;
-const GRID_HALFBEAT_WIDTH = 1;
 
 const CYMBAL_PITCHES = new Set([42, 46, 49, 51]); // hi-hats and cymbals for special rendering
 const OPEN_HAT_PITCHES = new Set([46]);
@@ -193,16 +208,16 @@ export class TablatureRenderer {
         const gfx = this.scene.add.graphics();
 
         // Background
-        gfx.fillStyle(0x0d0d0d, 1);
+        gfx.fillStyle(BG_COLOR, 1);
         gfx.fillRect(0, 0, width, height);
 
         // Staff lines + separator
-        gfx.lineStyle(1, 0x333333, 0.8);
+        gfx.lineStyle(1, STAFF_LINE_COLOR, STAFF_LINE_ALPHA);
         for (const rowInfo of this.activeRows) {
             const y = this.getRowY(rowInfo.row, this.activeRows.length);
             gfx.lineBetween(LABEL_WIDTH, y, width, y);
         }
-        gfx.lineStyle(1, 0x444444, 1);
+        gfx.lineStyle(1, SEPARATOR_LINE_COLOR, 1);
         gfx.lineBetween(LABEL_WIDTH, 0, LABEL_WIDTH, height);
 
         this.staticTex.clear();
@@ -358,12 +373,13 @@ export class TablatureRenderer {
                 NOTE_MIN_R + (note.velocity / 127) * (NOTE_MAX_R - NOTE_MIN_R);
 
             const isActive =
-                Math.abs(note.beat - currentBeat) < 0.06 / secondsPerBeat;
+                Math.abs(note.beat - currentBeat) <
+                ACTIVE_NOTE_WINDOW_SECONDS / secondsPerBeat;
             const colorHex = parseInt(drumInfo.color.replace("#", ""), 16);
             const alpha = isActive ? 1.0 : 0.85;
 
             if (CYMBAL_PITCHES.has(note.pitch)) {
-                const size = isActive ? r * 1.4 : r;
+                const size = isActive ? r * CYMBAL_SCALE_ACTIVE : r;
                 this.dynamicGfx.lineStyle(isActive ? 3 : 2, colorHex, alpha);
                 this.dynamicGfx.lineBetween(
                     x - size,
@@ -378,10 +394,14 @@ export class TablatureRenderer {
                     y - size,
                 );
                 if (OPEN_HAT_PITCHES.has(note.pitch)) {
-                    this.dynamicGfx.strokeCircle(x, y, size * 1.4);
+                    this.dynamicGfx.strokeCircle(
+                        x,
+                        y,
+                        size * CYMBAL_SCALE_ACTIVE,
+                    );
                 }
             } else {
-                const radius = isActive ? r * 1.3 : r;
+                const radius = isActive ? r * NOTE_SCALE_ACTIVE : r;
                 this.dynamicGfx.fillStyle(colorHex, alpha);
                 this.dynamicGfx.fillCircle(x, y, radius);
             }
@@ -400,7 +420,8 @@ export class TablatureRenderer {
                 const elapsed = flashNow - latestFlash;
                 if (elapsed < LABEL_FLASH_DURATION_MS) {
                     const alpha =
-                        0.45 * (1 - elapsed / LABEL_FLASH_DURATION_MS);
+                        LABEL_FLASH_ALPHA_MAX *
+                        (1 - elapsed / LABEL_FLASH_DURATION_MS);
                     const colorHex = parseInt(
                         rowInfo.color.replace("#", ""),
                         16,
@@ -419,7 +440,7 @@ export class TablatureRenderer {
 
         // 4.6. Draw user hit markers (scrolling in beat-space)
         const markerNow = Date.now();
-        const HIT_MARKER_R = NOTE_MIN_R * 0.65;
+        const HIT_MARKER_R = NOTE_MIN_R * HIT_MARKER_SCALE;
         for (const marker of this.userHitMarkers) {
             const x = this.getNoteX(marker.beat, currentBeat, ppb, playheadX);
             if (x < LABEL_WIDTH - NOTE_MAX_R * 3 || x > width + NOTE_MAX_R * 3)
@@ -431,23 +452,27 @@ export class TablatureRenderer {
                 // Pulse phase: expanding fading ring
                 if (elapsed < GREEN_PULSE_DURATION_MS) {
                     const t = elapsed / GREEN_PULSE_DURATION_MS;
-                    const pulseR = NOTE_MIN_R * (1 + t * 1.8);
-                    const pulseAlpha = 0.65 * (1 - t);
-                    this.dynamicGfx.fillStyle(0x00ff66, pulseAlpha);
+                    const pulseR = NOTE_MIN_R * (1 + t * PULSE_SCALE_MAX);
+                    const pulseAlpha = PULSE_ALPHA_MAX * (1 - t);
+                    this.dynamicGfx.fillStyle(PULSE_COLOR, pulseAlpha);
                     this.dynamicGfx.fillCircle(x, y, pulseR);
                 }
                 // Steady small green dot
-                this.dynamicGfx.fillStyle(0x00cc55, 0.9);
+                this.dynamicGfx.fillStyle(GOOD_HIT_COLOR, 0.9);
                 this.dynamicGfx.fillCircle(x, y, HIT_MARKER_R);
             } else {
                 // Steady small red dot
-                this.dynamicGfx.fillStyle(0xff3333, 0.85);
+                this.dynamicGfx.fillStyle(BAD_HIT_COLOR, 0.85);
                 this.dynamicGfx.fillCircle(x, y, HIT_MARKER_R);
             }
         }
 
         // 5. Draw playhead
-        this.dynamicGfx.lineStyle(2, 0xffffff, 0.9);
+        this.dynamicGfx.lineStyle(
+            PLAYHEAD_WIDTH,
+            PLAYHEAD_COLOR,
+            PLAYHEAD_ALPHA,
+        );
         this.dynamicGfx.lineBetween(playheadX, 0, playheadX, height);
     }
 }
