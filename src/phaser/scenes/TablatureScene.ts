@@ -52,18 +52,31 @@ export class TablatureScene extends Scene {
     create() {
         this.tabRenderer = new TablatureRenderer(this);
 
-        EventBus.on(AppEvent.LOAD_TABLATURE, this.onLoadTablature);
-        EventBus.on(AppEvent.TAB_PLAY, this.onTabPlay);
-        EventBus.on(AppEvent.TAB_PAUSE, this.onTabPause);
-        EventBus.on(AppEvent.TAB_RESET, this.onTabReset);
-        EventBus.on(AppEvent.MIDI_INPUT_NOTE, this.onMidiInputNote);
+        const eventHandlers = [
+            [AppEvent.LOAD_TABLATURE, this.onLoadTablature],
+            [AppEvent.TAB_PLAY, this.onTabPlay],
+            [AppEvent.TAB_PAUSE, this.onTabPause],
+            [AppEvent.TAB_RESET, this.onTabReset],
+            [AppEvent.MIDI_INPUT_NOTE, this.onMidiInputNote],
+        ] as const;
+
+        eventHandlers.forEach(([event, handler]) => {
+            EventBus.on(event, handler);
+        });
 
         // Handle canvas resize: re-render static layer
-        this.scale.on("resize", () => {
+        const onResize = () => {
             if (this.ready) {
                 this.tabRenderer.resize();
-                this.tabRenderer.renderStaticLayer();
             }
+        };
+        this.scale.on("resize", onResize);
+
+        this.events.once("shutdown", () => {
+            eventHandlers.forEach(([event, handler]) => {
+                EventBus.off(event, handler);
+            });
+            this.scale.off("resize", onResize);
         });
 
         EventBus.emit(AppEvent.CURRENT_SCENE_READY, this as any);
@@ -73,13 +86,5 @@ export class TablatureScene extends Scene {
         if (!this.ready) return;
         const currentTime = Tone.getTransport().seconds;
         this.tabRenderer.render(currentTime);
-    }
-
-    shutdown() {
-        EventBus.off(AppEvent.LOAD_TABLATURE, this.onLoadTablature);
-        EventBus.off(AppEvent.TAB_PLAY, this.onTabPlay);
-        EventBus.off(AppEvent.TAB_PAUSE, this.onTabPause);
-        EventBus.off(AppEvent.TAB_RESET, this.onTabReset);
-        EventBus.off(AppEvent.MIDI_INPUT_NOTE, this.onMidiInputNote);
     }
 }

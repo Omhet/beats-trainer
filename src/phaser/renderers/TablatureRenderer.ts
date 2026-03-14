@@ -185,6 +185,10 @@ export class TablatureRenderer {
     }
 
     renderStaticLayer() {
+        if (!this.scene || !this.scene.sys || !this.scene.sys.displayList) {
+            return;
+        }
+
         const { width, height } = this.scene.scale;
         const gfx = this.scene.add.graphics();
 
