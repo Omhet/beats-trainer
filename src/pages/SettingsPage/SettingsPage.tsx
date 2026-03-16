@@ -1,7 +1,7 @@
 import { AudioManager } from "@/audio/AudioManager";
 import { useAudio } from "@/hooks/useAudio";
 import { ConnectedMidiDevice, useAppStore } from "@/store/useAppStore";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { DeviceAccordion } from "./DeviceAccordion";
 import { MidiPermissionBanner } from "./MidiPermissionBanner";
@@ -12,9 +12,6 @@ export function SettingsPage() {
     const connectedMidiDevices = useAppStore((s) => s.connectedMidiDevices);
     const audioLatencyMs = useAppStore((s) => s.audioLatencyMs);
     const setAudioLatencyMs = useAppStore((s) => s.setAudioLatencyMs);
-    const [detectedLatencyMs, setDetectedLatencyMs] = useState<number | null>(
-        null,
-    );
     useAudio(); // Synchronizes volumes
 
     useEffect(() => {
@@ -26,21 +23,6 @@ export function SettingsPage() {
                     console.warn("Failed to load samples in SettingsPage", err);
                 });
         }
-    }, []);
-
-    useEffect(() => {
-        // Read browser-reported output latency after AudioManager has started.
-        // If the user hasn't manually set a value yet (still at default 0),
-        // auto-apply the detected value as a sensible starting point.
-        const ms = AudioManager.getOutputLatencyMs();
-        if (ms > 0) {
-            const rounded = Math.round(ms);
-            setDetectedLatencyMs(rounded);
-            if (audioLatencyMs === 0) {
-                setAudioLatencyMs(rounded);
-            }
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 
     const handleBack = () => {
@@ -87,27 +69,21 @@ export function SettingsPage() {
                                 </span>
                             </div>
                         </div>
-                        {detectedLatencyMs !== null && (
-                            <div className={styles.latencyDetected}>
-                                <span>
-                                    Browser-reported output latency:{" "}
-                                    <strong>{detectedLatencyMs} ms</strong>
-                                </span>
-                                <button
-                                    className={styles.latencyAutoBtn}
-                                    onClick={() =>
-                                        setAudioLatencyMs(detectedLatencyMs)
-                                    }
-                                >
-                                    Use detected value
-                                </button>
-                            </div>
-                        )}
                         <p className={styles.latencyHint}>
-                            Positive values delay the visual scroll and shift
-                            the hit window later, compensating for audio output
-                            lag. Start with the detected value and fine-tune by
-                            ear.
+                            Adjusts when notes are considered a hit and how the
+                            scroll aligns with what you hear.
+                            <br />
+                            <strong>Negative</strong> (e.g. −20 to −80 ms) —
+                            notes arrive visually earlier; use this when the
+                            track feels ahead of the beat you hear.
+                            <br />
+                            <strong>Positive</strong> (e.g. +20 to +80 ms) —
+                            notes arrive visually later; use this when you feel
+                            you&apos;re hitting too early.
+                            <br />
+                            Start around −40 ms and nudge by ±10 ms until hits
+                            feel natural. Bluetooth headphones may need −150 ms
+                            or more.
                         </p>
                     </div>
                 </section>

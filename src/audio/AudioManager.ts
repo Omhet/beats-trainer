@@ -98,12 +98,6 @@ class AudioManagerClass {
         return Tone.getTransport().seconds;
     }
 
-    /** Returns the browser-reported audio output latency in milliseconds. */
-    getOutputLatencyMs(): number {
-        const ctx = Tone.getContext().rawContext as AudioContext;
-        return (ctx.outputLatency ?? ctx.baseLatency ?? 0) * 1000;
-    }
-
     dispose(): void {
         Tone.getTransport().stop();
         this.midi.dispose();
