@@ -51,7 +51,7 @@ export class DrumSampler {
         if (!player) return;
         // Scale volume by velocity
         player.volume.value = Tone.gainToDb(Math.max(0.01, velocity));
-        player.start(time ?? Tone.now());
+        player.start(time ?? Tone.immediate());
     }
 
     setVolume(zeroToOne: number): void {

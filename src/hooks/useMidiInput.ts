@@ -54,7 +54,11 @@ export function useMidiInput() {
                 // Only handle notes that map to a known drum sound
                 if (standardPitch === undefined) return;
 
-                AudioManager.userInputSampler.trigger(standardPitch, velocity);
+                AudioManager.userInputSampler.trigger(
+                    standardPitch,
+                    velocity,
+                    Tone.immediate(),
+                );
 
                 EventBus.emit(AppEvent.MIDI_INPUT_NOTE, {
                     pitch: standardPitch,
@@ -107,4 +111,3 @@ export function useMidiInput() {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []);
 }
-
