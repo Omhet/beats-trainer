@@ -38,6 +38,16 @@ export function useMidiInput() {
 
                 // Learn mode: capture next note for remapping
                 if (learnTarget !== null && learnTarget.deviceId === deviceId) {
+                    const effectiveMap = getEffectiveMap(deviceId, input.name);
+
+                    // If note is already mapped to the target, just stop (already unique)
+                    if (
+                        effectiveMap[deviceNote] === learnTarget.standardPitch
+                    ) {
+                        stopLearn();
+                        return;
+                    }
+
                     setDeviceNoteMapping(
                         deviceId,
                         deviceNote,

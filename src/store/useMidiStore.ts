@@ -35,6 +35,9 @@ interface MidiState {
         standardPitch: number,
     ) => void;
 
+    /** Remove a mapping for a device note. */
+    removeDeviceNoteMapping: (deviceId: string, deviceNote: number) => void;
+
     /**
      * One-time import of a named preset as the device's overrides.
      * Writes all preset entries as explicit overrides so the user can further
@@ -80,6 +83,18 @@ export const useMidiStore = create<MidiState>()(
                     },
                 })),
 
+            removeDeviceNoteMapping: (deviceId, deviceNote) =>
+                set((state) => {
+                    const deviceMap = { ...(state.deviceMaps[deviceId] ?? {}) };
+                    delete deviceMap[deviceNote];
+                    return {
+                        deviceMaps: {
+                            ...state.deviceMaps,
+                            [deviceId]: deviceMap,
+                        },
+                    };
+                }),
+
             importPreset: (deviceId, presetName) => {
                 const preset = PRESET_MAPS[presetName];
                 if (!preset) return;
@@ -118,4 +133,3 @@ export const useMidiStore = create<MidiState>()(
         },
     ),
 );
-

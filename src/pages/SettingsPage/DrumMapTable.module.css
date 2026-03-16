@@ -57,6 +57,37 @@
     font-size: 0.875rem;
 }
 
+.noteTag {
+    display: inline-flex;
+    align-items: center;
+    background: #1a1a1a;
+    border: 1px solid #282828;
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    margin-right: 0.4rem;
+    margin-bottom: 0.25rem;
+    font-size: 0.8rem;
+    color: #999;
+}
+
+.noteDelete {
+    margin-left: 0.35rem;
+    cursor: pointer;
+    color: #555;
+    font-size: 1rem;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.15s;
+    user-select: none;
+    padding: 0 2px;
+}
+
+.noteDelete:hover {
+    color: #e63946;
+}
+
 .learnBtn {
     padding: 0.28rem 0.65rem;
     font-size: 0.78rem;
@@ -91,4 +122,3 @@
         opacity: 0.45;
     }
 }
-

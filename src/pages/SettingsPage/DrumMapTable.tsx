@@ -32,17 +32,27 @@ export function DrumMapTable({ deviceId, deviceName }: Props) {
     const learnTarget = useMidiStore((s) => s.learnTarget);
     const startLearn = useMidiStore((s) => s.startLearn);
     const stopLearn = useMidiStore((s) => s.stopLearn);
+    const removeDeviceNoteMapping = useMidiStore(
+        (s) => s.removeDeviceNoteMapping,
+    );
 
-    // Build reverse map: standardPitch → deviceNote, recomputed when overrides change
-    const reverseMap = useMemo<Record<number, number>>(() => {
+    // Build map: standardPitch → Array of deviceNotes, recomputed when overrides change
+    const reverseMapGroups = useMemo<Record<number, number[]>>(() => {
         const effectiveMap = getEffectiveMap(deviceId, deviceName);
-        const reverse: Record<number, number> = {};
-        for (const [deviceNote, standardPitch] of Object.entries(
+        const groups: Record<number, number[]> = {};
+        for (const [deviceNoteStr, standardPitch] of Object.entries(
             effectiveMap,
         )) {
-            reverse[standardPitch as number] = Number(deviceNote);
+            const pitch = standardPitch as number;
+            const note = Number(deviceNoteStr);
+            if (!groups[pitch]) groups[pitch] = [];
+            groups[pitch].push(note);
         }
-        return reverse;
+        // Ensure notes are sorted
+        for (const pitch in groups) {
+            groups[pitch].sort((a, b) => a - b);
+        }
+        return groups;
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [deviceId, deviceName, deviceOverrides, getEffectiveMap]);
 
@@ -51,7 +61,7 @@ export function DrumMapTable({ deviceId, deviceName }: Props) {
             <thead>
                 <tr className={styles.headRow}>
                     <th className={styles.th}>Drum</th>
-                    <th className={styles.th}>MIDI Note</th>
+                    <th className={styles.th}>MIDI Notes</th>
                     <th className={styles.th}></th>
                 </tr>
             </thead>
@@ -60,7 +70,7 @@ export function DrumMapTable({ deviceId, deviceName }: Props) {
                     const isLearning =
                         learnTarget?.deviceId === deviceId &&
                         learnTarget?.standardPitch === pitch;
-                    const mappedNote = reverseMap[pitch] ?? pitch;
+                    const mappedNotes = reverseMapGroups[pitch] ?? [];
 
                     return (
                         <tr
@@ -75,7 +85,23 @@ export function DrumMapTable({ deviceId, deviceName }: Props) {
                                 {getDisplayLabel(pitch)}
                             </td>
                             <td className={`${styles.cell} ${styles.noteCell}`}>
-                                {mappedNote}
+                                {mappedNotes.map((note) => (
+                                    <span key={note} className={styles.noteTag}>
+                                        {note}
+                                        <span
+                                            className={styles.noteDelete}
+                                            onClick={() =>
+                                                removeDeviceNoteMapping(
+                                                    deviceId,
+                                                    note,
+                                                )
+                                            }
+                                            title="Remove mapping"
+                                        >
+                                            ×
+                                        </span>
+                                    </span>
+                                ))}
                             </td>
                             <td className={styles.cell}>
                                 <button
