@@ -1,6 +1,7 @@
 import { EventBus } from "@/phaser/EventBus";
 import { TablatureRenderer } from "@/phaser/renderers/TablatureRenderer";
 import { AppEvent } from "@/phaser/types/events";
+import { useAppStore } from "@/store/useAppStore";
 import { NoteEvent } from "@/types/midi";
 import { Scene } from "phaser";
 import * as Tone from "tone";
@@ -38,9 +39,10 @@ export class TablatureScene extends Scene {
         velocity: number;
         time: number;
     }) => {
+        const latencyS = useAppStore.getState().audioLatencyMs / 1000;
         this.tabRenderer.recordUserHit(
             payload.pitch,
-            Tone.getTransport().seconds,
+            Tone.getTransport().seconds + latencyS,
             this.isPlaying,
         );
     };
@@ -84,7 +86,8 @@ export class TablatureScene extends Scene {
 
     update() {
         if (!this.ready) return;
-        const currentTime = Tone.getTransport().seconds;
+        const latencyS = useAppStore.getState().audioLatencyMs / 1000;
+        const currentTime = Tone.getTransport().seconds - latencyS;
         this.tabRenderer.render(currentTime);
     }
 }

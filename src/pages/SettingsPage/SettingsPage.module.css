@@ -70,3 +70,82 @@
     font-size: 0.9rem;
 }
 
+/* Latency compensation card */
+.latencyCard {
+    background: #111;
+    border: 1px solid #222;
+    border-radius: 6px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.latencyRow {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.latencyLabel {
+    font-size: 0.875rem;
+    color: #ccc;
+    min-width: 160px;
+}
+
+.latencyControls {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex: 1;
+}
+
+.latencySlider {
+    flex: 1;
+    min-width: 140px;
+    accent-color: #e63946;
+    cursor: pointer;
+}
+
+.latencyValue {
+    font-size: 0.875rem;
+    color: #fff;
+    font-variant-numeric: tabular-nums;
+    min-width: 54px;
+    text-align: right;
+}
+
+.latencyDetected {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: #888;
+}
+
+.latencyAutoBtn {
+    background: transparent;
+    border: 1px solid #333;
+    color: #ccc;
+    cursor: pointer;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    transition:
+        border-color 0.2s,
+        color 0.2s;
+}
+
+.latencyAutoBtn:hover {
+    border-color: #e63946;
+    color: #fff;
+}
+
+.latencyHint {
+    font-size: 0.75rem;
+    color: #555;
+    margin: 0;
+    line-height: 1.5;
+}
