@@ -15,6 +15,10 @@ export class DrumSampler {
         this.volume = new Tone.Volume(0).toDestination();
     }
 
+    get isLoaded(): boolean {
+        return this.loaded;
+    }
+
     async load(basePath: string): Promise<void> {
         this.basePath = basePath;
         this.dispose();
